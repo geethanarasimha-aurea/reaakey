@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Typing Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6ecbf5, #ffb6c1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #ff6b6b;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 #ffd166;
+        }
+        
+        .subtitle {
+            color: #06d6a0;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background-color: #ffd166;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            color: #118ab2;
+        }
+        
+        .word-display {
+            font-size: 2.5rem;
+            margin: 30px 0;
+            color: #073b4c;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .current-letter {
+            color: #ef476f;
+            text-decoration: underline;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .keyboard-container {
+            margin-top: 20px;
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 0 #1a252f;
+            overflow-x: auto;
+        }
+        
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 1000px;
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        
+        .key {
+            height: 50px;
+            margin: 4px;
+            background: linear-gradient(145deg, #ecf0f1, #bdc3c7);
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 4px 0 #95a5a6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+        }
+        
+        .key:hover {
+            background: linear-gradient(145deg, #d5dbdb, #a6acaf);
+        }
+        
+        .key:active, .key.active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #95a5a6;
+        }
+        
+        .key.highlight {
+            background: linear-gradient(145deg, #ef476f, #ff6b6b);
+            color: white;
+            animation: pulse 0.8s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .special-key {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 0 #1c5d8a;
+        }
+        
+        .function-key {
+            background: linear-gradient(145deg, #9b59b6, #8e44ad);
+            color: white;
+            box-shadow: 0 4px 0 #6c3483;
+            font-size: 0.8rem;
+        }
+        
+        .space-key {
+            width: 300px;
+        }
+        
+        .enter-key {
+            width: 100px;
+        }
+        
+        .tab-key {
+            width: 80px;
+        }
+        
+        .caps-key {
+            width: 90px;
+        }
+        
+        .shift-key {
+            width: 110px;
+        }
+        
+        .ctrl-key, .alt-key {
+            width: 70px;
+        }
+        
+        .backspace-key {
+            width: 90px;
+        }
+        
+        .f-key {
+            width: 50px;
+        }
+        
+        .arrow-key {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #7f8c8d, #95a5a6);
+            color: white;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .start-btn {
+            background: linear-gradient(to right, #06d6a0, #4cc9f0);
+            color: white;
+            box-shadow: 0 4px 0 #049c75;
+        }
+        
+        .start-btn:hover {
+            background: linear-gradient(to right, #04b386, #3ab0d9);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to right, #ffd166, #ff9e6d);
+            color: #073b4c;
+            box-shadow: 0 4px 0 #e09c3a;
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(to right, #ffc145, #ff8a50);
+        }
+        
+        .speak-btn {
+            background: linear-gradient(to right, #ef476f, #ff9e6d);
+            color: white;
+            box-shadow: 0 4px 0 #c23354;
+        }
+        
+        .speak-btn:hover {
+            background: linear-gradient(to right, #d63d5f, #e88c5a);
+        }
+        
+        .nav-btn {
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
+            color: white;
+            box-shadow: 0 4px 0 #6c3483;
+        }
+        
+        .nav-btn:hover {
+            background: linear-gradient(to right, #8e44ad, #7d3c98);
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            min-height: 40px;
+            color: #118ab2;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #06d6a0, #4cc9f0);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .instructions {
+            background-color: #ffd166;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            color: #073b4c;
+            font-size: 1.1rem;
+        }
+        
+        .completed-word {
+            color: #06d6a0;
+        }
+        
+        @media (max-width: 1100px) {
+            .keyboard-container {
+                overflow-x: auto;
+            }
+            
+            .key {
+                height: 40px;
+                font-size: 0.8rem;
+                margin: 2px;
+            }
+            
+            .f-key, .arrow-key {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .space-key {
+                width: 200px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .word-display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kids Typing Adventure</h1>
+        <p class="subtitle">Learn typing with a real keyboard experience!</p>
+        
+        <div class="game-info">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="words-completed">Words: <span id="words-completed">0</span>/100</div>
+            <div class="current-word">Word: <span id="current-word-number">1</span>/100</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="word-display" id="word-display"></div>
+        
+        <div class="keyboard-container">
+            <div class="keyboard" id="keyboard">
+                <!-- Keyboard will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="start-btn" id="start-btn">Start Game</button>
+            <button class="reset-btn" id="reset-btn">Reset</button>
+            <button class="speak-btn" id="speak-btn">🔊 Speak Word</button>
+            <button class="nav-btn" id="prev-btn">◀ Previous</button>
+            <button class="nav-btn" id="next-btn">Next ▶</button>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <div class="instructions">
+            <p>Type the highlighted letter on the keyboard. Use the on-screen keyboard or your physical keyboard! Click "Speak Word" to hear the word. Use arrow buttons to navigate between words.</p>
+        </div>
+    </div>
+
+    <script>
+        // Word list for practice
+        const wordList = [
+            "apple", "ball", "cat", "dog", "elephant", "fish", "goat", "hat", "ice", "jump",
+            "kite", "lion", "monkey", "nest", "orange", "pig", "queen", "rabbit", "sun", "tree",
+            "umbrella", "van", "water", "xray", "yoyo", "zebra", "ant", "bear", "car", "duck",
+            "egg", "frog", "girl", "house", "igloo", "jacket", "king", "leaf", "moon", "nose",
+            "owl", "pencil", "queen", "rain", "star", "train", "up", "violin", "whale", "box",
+            "yellow", "zoo", "baby", "cake", "door", "eye", "fire", "grape", "heart", "icecream",
+            "juice", "key", "lamp", "mouse", "night", "orange", "pizza", "quilt", "ring", "shoe",
+            "table", "unicorn", "vase", "window", "xylophone", "yacht", "zipper", "airplane", "boat", "cloud",
+            "dinosaur", "earth", "flower", "guitar", "horse", "island", "jelly", "kangaroo", "lizard", "mountain",
+            "notebook", "ocean", "penguin", "quail", "rocket", "snake", "tiger", "uniform", "volcano", "worm"
+        ];
+
+        // Complete 104-key keyboard layout
+        const keyboardLayout = [
+            // Function keys row
+            [
+                { key: 'esc', label: 'Esc', width: 70, class: 'special-key' },
+                { key: 'f1', label: 'F1', width: 50, class: 'function-key' },
+                { key: 'f2', label: 'F2', width: 50, class: 'function-key' },
+                { key: 'f3', label: 'F3', width: 50, class: 'function-key' },
+                { key: 'f4', label: 'F4', width: 50, class: 'function-key' },
+                { key: 'f5', label: 'F5', width: 50, class: 'function-key' },
+                { key: 'f6', label: 'F6', width: 50, class: 'function-key' },
+                { key: 'f7', label: 'F7', width: 50, class: 'function-key' },
+                { key: 'f8', label: 'F8', width: 50, class: 'function-key' },
+                { key: 'f9', label: 'F9', width: 50, class: 'function-key' },
+                { key: 'f10', label: 'F10', width: 50, class: 'function-key' },
+                { key: 'f11', label: 'F11', width: 50, class: 'function-key' },
+                { key: 'f12', label: 'F12', width: 50, class: 'function-key' }
+            ],
+            // Number row
+            [
+                { key: '`', label: '` ~', width: 50 },
+                { key: '1', label: '1 !', width: 50 },
+                { key: '2', label: '2 @', width: 50 },
+                { key: '3', label: '3 #', width: 50 },
+                { key: '4', label: '4 $', width: 50 },
+                { key: '5', label: '5 %', width: 50 },
+                { key: '6', label: '6 ^', width: 50 },
+                { key: '7', label: '7 &', width: 50 },
+                { key: '8', label: '8 *', width: 50 },
+                { key: '9', label: '9 (', width: 50 },
+                { key: '0', label: '0 )', width: 50 },
+                { key: '-', label: '- _', width: 50 },
+                { key: '=', label: '= +', width: 50 },
+                { key: 'backspace', label: 'Backspace', width: 90, class: 'special-key' }
+            ],
+            // First letter row
+            [
+                { key: 'tab', label: 'Tab', width: 80, class: 'special-key' },
+                { key: 'q', label: 'Q', width: 50 },
+                { key: 'w', label: 'W', width: 50 },
+                { key: 'e', label: 'E', width: 50 },
+                { key: 'r', label: 'R', width: 50 },
+                { key: 't', label: 'T', width: 50 },
+                { key: 'y', label: 'Y', width: 50 },
+                { key: 'u', label: 'U', width: 50 },
+                { key: 'i', label: 'I', width: 50 },
+                { key: 'o', label: 'O', width: 50 },
+                { key: 'p', label: 'P', width: 50 },
+                { key: '[', label: '[ {', width: 50 },
+                { key: ']', label: '] }', width: 50 },
+                { key: '\\', label: '\\ |', width: 70, class: 'special-key' }
+            ],
+            // Second letter row
+            [
+                { key: 'caps', label: 'Caps Lock', width: 90, class: 'special-key' },
+                { key: 'a', label: 'A', width: 50 },
+                { key: 's', label: 'S', width: 50 },
+                { key: 'd', label: 'D', width: 50 },
+                { key: 'f', label: 'F', width: 50 },
+                { key: 'g', label: 'G', width: 50 },
+                { key: 'h', label: 'H', width: 50 },
+                { key: 'j', label: 'J', width: 50 },
+                { key: 'k', label: 'K', width: 50 },
+                { key: 'l', label: 'L', width: 50 },
+                { key: ';', label: '; :', width: 50 },
+                { key: "'", label: "' \"", width: 50 },
+                { key: 'enter', label: 'Enter', width: 100, class: 'special-key' }
+            ],
+            // Third letter row
+            [
+                { key: 'shift', label: 'Shift', width: 110, class: 'special-key' },
+                { key: 'z', label: 'Z', width: 50 },
+                { key: 'x', label: 'X', width: 50 },
+                { key: 'c', label: 'C', width: 50 },
+                { key: 'v', label: 'V', width: 50 },
+                { key: 'b', label: 'B', width: 50 },
+                { key: 'n', label: 'N', width: 50 },
+                { key: 'm', label: 'M', width: 50 },
+                { key: ',', label: ', <', width: 50 },
+                { key: '.', label: '. >', width: 50 },
+                { key: '/', label: '/ ?', width: 50 },
+                { key: 'shift', label: 'Shift', width: 110, class: 'special-key' }
+            ],
+            // Space bar row
+            [
+                { key: 'ctrl', label: 'Ctrl', width: 70, class: 'special-key' },
+                { key: 'win', label: 'Win', width: 70, class: 'special-key' },
+                { key: 'alt', label: 'Alt', width: 70, class: 'special-key' },
+                { key: 'space', label: 'Space', width: 300, class: 'special-key' },
+                { key: 'alt', label: 'Alt', width: 70, class: 'special-key' },
+                { key: 'win', label: 'Win', width: 70, class: 'special-key' },
+                { key: 'menu', label: 'Menu', width: 70, class: 'special-key' },
+                { key: 'ctrl', label: 'Ctrl', width: 70, class: 'special-key' }
+            ],
+            // Arrow keys row
+            [
+                { key: 'ins', label: 'Insert', width: 70, class: 'special-key' },
+                { key: 'home', label: 'Home', width: 70, class: 'special-key' },
+                { key: 'pgup', label: 'PgUp', width: 70, class: 'special-key' },
+                { key: 'del', label: 'Delete', width: 70, class: 'special-key' },
+                { key: 'end', label: 'End', width: 70, class: 'special-key' },
+                { key: 'pgdn', label: 'PgDn', width: 70, class: 'special-key' },
+                { key: 'up', label: '↑', width: 50, class: 'arrow-key' },
+                { key: 'left', label: '←', width: 50, class: 'arrow-key' },
+                { key: 'down', label: '↓', width: 50, class: 'arrow-key' },
+                { key: 'right', label: '→', width: 50, class: 'arrow-key' }
+            ]
+        ];
+
+        // Game state
+        let currentWordIndex = 0;
+        let currentLetterIndex = 0;
+        let score = 0;
+        let wordsCompleted = 0;
+        let gameActive = false;
+        let currentWord = '';
+
+        // DOM elements
+        const wordDisplay = document.getElementById('word-display');
+        const keyboardElement = document.getElementById('keyboard');
+        const scoreElement = document.getElementById('score');
+        const wordsCompletedElement = document.getElementById('words-completed');
+        const currentWordNumberElement = document.getElementById('current-word-number');
+        const startButton = document.getElementById('start-btn');
+        const resetButton = document.getElementById('reset-btn');
+        const speakButton = document.getElementById('speak-btn');
+        const prevButton = document.getElementById('prev-btn');
+        const nextButton = document.getElementById('next-btn');
+        const messageElement = document.getElementById('message');
+        const progressElement = document.getElementById('progress');
+
+        // Initialize the keyboard
+        function initializeKeyboard() {
+            keyboardElement.innerHTML = '';
+            
+            keyboardLayout.forEach(row => {
+                const rowElement = document.createElement('div');
+                rowElement.className = 'keyboard-row';
+                
+                row.forEach(keyConfig => {
+                    const keyElement = document.createElement('div');
+                    keyElement.className = 'key';
+                    keyElement.textContent = keyConfig.label;
+                    keyElement.dataset.key = keyConfig.key;
+                    keyElement.style.width = `${keyConfig.width}px`;
+                    
+                    if (keyConfig.class) {
+                        keyElement.classList.add(keyConfig.class);
+                    }
+                    
+                    // Add click event for on-screen keyboard
+                    keyElement.addEventListener('click', () => handleKeyPress(keyConfig.key));
+                    
+                    rowElement.appendChild(keyElement);
+                });
+                
+                keyboardElement.appendChild(rowElement);
+            });
+        }
+
+        // Start the game
+        function startGame() {
+            gameActive = true;
+            currentWordIndex = 0;
+            currentLetterIndex = 0;
+            score = 0;
+            wordsCompleted = 0;
+            updateScore();
+            loadWord();
+            messageElement.textContent = 'Type the highlighted letter!';
+            startButton.textContent = 'Pause Game';
+            progressElement.style.width = '0%';
+        }
+
+        // Load a new word
+        function loadWord() {
+            if (currentWordIndex >= wordList.length) {
+                endGame();
+                return;
+            }
+            
+            currentWord = wordList[currentWordIndex];
+            currentLetterIndex = 0;
+            currentWordNumberElement.textContent = currentWordIndex + 1;
+            
+            // Display the word with the first letter highlighted
+            updateWordDisplay();
+            
+            // Highlight the corresponding key on the keyboard
+            highlightKey(currentWord[0]);
+        }
+
+        // Highlight a key on the keyboard
+        function highlightKey(letter) {
+            // Remove highlight from all keys
+            document.querySelectorAll('.key').forEach(key => {
+                key.classList.remove('highlight');
+            });
+            
+            // Add highlight to the target key
+            const targetKey = document.querySelector(`.key[data-key="${letter.toLowerCase()}"]`);
+            if (targetKey) {
+                targetKey.classList.add('highlight');
+            }
+        }
+
+        // Handle key press
+        function handleKeyPress(key) {
+            if (!gameActive) return;
+            
+            // Handle special keys
+            if (key === 'backspace') {
+                if (currentLetterIndex > 0) {
+                    currentLetterIndex--;
+                    updateWordDisplay();
+                    highlightKey(currentWord[currentLetterIndex]);
+                }
+                return;
+            }
+            
+            if (key === 'enter') {
+                // Skip to next word if Enter is pressed
+                completeWord();
+                return;
+            }
+            
+            if (key === 'space') {
+                // Space acts like any other key for single words
+                key = ' ';
+            }
+            
+            // Handle arrow keys for navigation
+            if (key === 'left') {
+                navigateToPreviousWord();
+                return;
+            }
+            
+            if (key === 'right') {
+                navigateToNextWord();
+                return;
+            }
+            
+            // Ignore function keys and other non-character keys
+            if (['esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12',
+                 'tab', 'caps', 'shift', 'ctrl', 'alt', 'win', 'menu', 'ins', 'home', 'pgup', 
+                 'del', 'end', 'pgdn', 'up', 'down'].includes(key)) {
+                return;
+            }
+            
+            const expectedKey = currentWord[currentLetterIndex];
+            
+            if (key === expectedKey) {
+                // Correct key pressed
+                score += 10;
+                currentLetterIndex++;
+                
+                // Update word display
+                updateWordDisplay();
+                
+                // Check if word is completed
+                if (currentLetterIndex >= currentWord.length) {
+                    completeWord();
+                } else {
+                    // Highlight next key
+                    highlightKey(currentWord[currentLetterIndex]);
+                }
+            } else {
+                // Wrong key pressed
+                messageElement.textContent = 'Oops! Try again.';
+                score = Math.max(0, score - 5);
+                updateScore();
+                
+                // Visual feedback for wrong key
+                const pressedKey = document.querySelector(`.key[data-key="${key}"]`);
+                if (pressedKey) {
+                    pressedKey.classList.add('active');
+                    setTimeout(() => {
+                        pressedKey.classList.remove('active');
+                    }, 200);
+                }
+            }
+        }
+
+        // Complete the current word and move to next
+        function completeWord() {
+            wordsCompleted++;
+            currentWordIndex++;
+            updateScore();
+            
+            // Show success message
+            messageElement.textContent = 'Great job!';
+            
+            // Speak the word automatically
+            speakWord();
+            
+            // Load next word after a short delay
+            setTimeout(() => {
+                if (gameActive) {
+                    if (currentWordIndex < wordList.length) {
+                        loadWord();
+                        messageElement.textContent = 'Type the highlighted letter!';
+                    } else {
+                        endGame();
+                    }
+                }
+            }, 1500);
+        }
+
+        // Update word display based on current progress
+        function updateWordDisplay() {
+            let displayHTML = '';
+            for (let i = 0; i < currentWord.length; i++) {
+                if (i === currentLetterIndex) {
+                    displayHTML += `<span class="current-letter">${currentWord[i]}</span>`;
+                } else if (i < currentLetterIndex) {
+                    displayHTML += `<span class="completed-word">${currentWord[i]}</span>`;
+                } else {
+                    displayHTML += `<span>${currentWord[i]}</span>`;
+                }
+            }
+            
+            wordDisplay.innerHTML = displayHTML;
+        }
+
+        // Update score display
+        function updateScore() {
+            scoreElement.textContent = score;
+            wordsCompletedElement.textContent = wordsCompleted;
+            progressElement.style.width = `${(wordsCompleted / wordList.length) * 100}%`;
+        }
+
+        // Speak the current word using text-to-speech
+        function speakWord() {
+            if (!currentWord) return;
+            
+            const utterance = new SpeechSynthesisUtterance(currentWord);
+            utterance.rate = 0.8; // Slightly slower for kids
+            utterance.pitch = 1.2; // Slightly higher pitch for kid-friendly voice
+            
+            // Try to use a child-friendly voice if available
+            const voices = speechSynthesis.getVoices();
+            const childVoice = voices.find(voice => 
+                voice.name.includes('Child') || 
+                voice.name.includes('Kids') ||
+                voice.name.includes('Google UK English Female')
+            );
+            
+            if (childVoice) {
+                utterance.voice = childVoice;
+            }
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // Navigate to previous word
+        function navigateToPreviousWord() {
+            if (currentWordIndex > 0) {
+                currentWordIndex--;
+                loadWord();
+                messageElement.textContent = 'Previous word loaded.';
+            } else {
+                messageElement.textContent = 'This is the first word.';
+            }
+        }
+
+        // Navigate to next word
+        function navigateToNextWord() {
+            if (currentWordIndex < wordList.length - 1) {
+                currentWordIndex++;
+                loadWord();
+                messageElement.textContent = 'Next word loaded.';
+            } else {
+                messageElement.textContent = 'This is the last word.';
+            }
+        }
+
+        // End the game
+        function endGame() {
+            gameActive = false;
+            messageElement.textContent = `Congratulations! You completed all ${wordList.length} words! Final score: ${score}`;
+            wordDisplay.innerHTML = 'Game Complete!';
+            startButton.textContent = 'Play Again';
+            
+            // Remove highlights from keyboard
+            document.querySelectorAll('.key').forEach(key => {
+                key.classList.remove('highlight');
+            });
+        }
+
+        // Reset the game
+        function resetGame() {
+            gameActive = false;
+            currentWordIndex = 0;
+            currentLetterIndex = 0;
+            score = 0;
+            wordsCompleted = 0;
+            updateScore();
+            wordDisplay.innerHTML = 'Press Start to begin!';
+            messageElement.textContent = '';
+            startButton.textContent = 'Start Game';
+            progressElement.style.width = '0%';
+            currentWordNumberElement.textContent = '1';
+            
+            // Remove highlights from keyboard
+            document.querySelectorAll('.key').forEach(key => {
+                key.classList.remove('highlight');
+            });
+        }
+
+        // Event listeners
+        startButton.addEventListener('click', () => {
+            if (!gameActive) {
+                startGame();
+            } else {
+                gameActive = false;
+                startButton.textContent = 'Resume Game';
+                messageElement.textContent = 'Game paused. Click Resume to continue.';
+            }
+        });
+
+        resetButton.addEventListener('click', resetGame);
+        
+        speakButton.addEventListener('click', speakWord);
+        
+        prevButton.addEventListener('click', navigateToPreviousWord);
+        
+        nextButton.addEventListener('click', navigateToNextWord);
+
+        // Physical keyboard support
+        document.addEventListener('keydown', (event) => {
+            if (!gameActive) return;
+            
+            const key = event.key.toLowerCase();
+            
+            // Handle special keys
+            if (key === 'backspace') {
+                handleKeyPress('backspace');
+                event.preventDefault();
+                return;
+            }
+            
+            if (key === 'enter') {
+                handleKeyPress('enter');
+                event.preventDefault();
+                return;
+            }
+            
+            // Handle arrow keys
+            if (key === 'arrowleft') {
+                handleKeyPress('left');
+                event.preventDefault();
+                return;
+            }
+            
+            if (key === 'arrowright') {
+                handleKeyPress('right');
+                event.preventDefault();
+                return;
+            }
+            
+            // Check if the key is a letter, number, or space
+            if (/^[a-z0-9]$/.test(key) || key === ' ' || 
+                key === ',' || key === '.' || key === '/' || key === ';' || 
+                key === "'" || key === '[' || key === ']' || key === '\\' ||
+                key === '`' || key === '-' || key === '=') {
+                handleKeyPress(key);
+                
+                // Visual feedback for physical keyboard
+                const keyElement = document.querySelector(`.key[data-key="${key}"]`);
+                if (keyElement) {
+                    keyElement.classList.add('active');
+                    setTimeout(() => {
+                        keyElement.classList.remove('active');
+                    }, 200);
+                }
+            }
+        });
+
+        // Initialize the game
+        initializeKeyboard();
+        resetGame();
+        
+        // Load voices for text-to-speech
+        speechSynthesis.onvoiceschanged = () => {
+            // Voices are now loaded
+        };
+    </script>
+</body>
+</html>
