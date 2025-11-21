@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids Typing Practice</title>
+    <title>Reaa's Typing Adventure</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
         }
         
         body {
@@ -291,6 +291,12 @@
             color: #06d6a0;
         }
         
+        .reaa-name {
+            color: #ef476f;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
         @media (max-width: 1000px) {
             .keyboard-container {
                 overflow-x: auto;
@@ -323,7 +329,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Kids Typing Adventure</h1>
+        <h1>Reaa's Typing Adventure</h1>
         <p class="subtitle">Learn typing with a realistic keyboard!</p>
         
         <div class="game-info">
@@ -354,9 +360,7 @@
         
         <div class="message" id="message"></div>
         
-        <div class="instructions">
-            <p>Type the highlighted letter on the keyboard. Each key press will speak the key name. Complete the word and press Next to continue.</p>
-        </div>
+        
     </div>
 
     <script>
@@ -533,7 +537,7 @@
             wordsCompleted = 0;
             updateScore();
             loadWord();
-            messageElement.textContent = 'Type the highlighted letter!';
+            messageElement.innerHTML = 'Type the highlighted letter!';
             startButton.textContent = 'Pause Game';
             progressElement.style.width = '0%';
         }
@@ -568,6 +572,30 @@
             if (targetKey) {
                 targetKey.classList.add('highlight');
             }
+        }
+
+        // Fast speech function - doesn't wait for previous speech to finish
+        function speakFast(text) {
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9; // Slightly faster
+            utterance.pitch = 1.2;
+            
+            // Try to use a child-friendly voice if available
+            const voices = speechSynthesis.getVoices();
+            const childVoice = voices.find(voice => 
+                voice.name.includes('Child') || 
+                voice.name.includes('Kids') ||
+                voice.name.includes('Google UK English Female')
+            );
+            
+            if (childVoice) {
+                utterance.voice = childVoice;
+            }
+            
+            speechSynthesis.speak(utterance);
         }
 
         // Speak a key name
@@ -620,17 +648,14 @@
                 keyName = keyNames[key];
             }
             
-            const utterance = new SpeechSynthesisUtterance(keyName);
-            utterance.rate = 0.8;
-            utterance.pitch = 1.2;
-            speechSynthesis.speak(utterance);
+            speakFast(keyName);
         }
 
         // Handle key press
         function handleKeyPress(key) {
             if (!gameActive) return;
             
-            // Speak the key name
+            // Speak the key name immediately
             speakKey(key);
             
             // Handle special keys
@@ -683,9 +708,12 @@
                 
                 // Check if word is completed
                 if (currentLetterIndex >= currentWord.length) {
-                    // Word completed - speak the full word
-                    speakWord();
-                    messageElement.textContent = 'Word completed! Press Next to continue.';
+                    // Word completed - FIRST speak the word, THEN the motivational message
+                    speakFast(currentWord);
+                    setTimeout(() => {
+                        speakFast("Good Reaa, next spell with me");
+                        messageElement.innerHTML = 'Word completed! <span class="reaa-name">Good Reaa!</span> Press Next to continue.';
+                    }, 800);
                 } else {
                     // Highlight next key
                     highlightKey(currentWord[currentLetterIndex]);
@@ -733,24 +761,7 @@
         // Speak the current word using text-to-speech
         function speakWord() {
             if (!currentWord) return;
-            
-            const utterance = new SpeechSynthesisUtterance(currentWord);
-            utterance.rate = 0.8; // Slightly slower for kids
-            utterance.pitch = 1.2; // Slightly higher pitch for kid-friendly voice
-            
-            // Try to use a child-friendly voice if available
-            const voices = speechSynthesis.getVoices();
-            const childVoice = voices.find(voice => 
-                voice.name.includes('Child') || 
-                voice.name.includes('Kids') ||
-                voice.name.includes('Google UK English Female')
-            );
-            
-            if (childVoice) {
-                utterance.voice = childVoice;
-            }
-            
-            speechSynthesis.speak(utterance);
+            speakFast(currentWord);
         }
 
         // Navigate to previous word
@@ -769,7 +780,7 @@
             if (currentWordIndex < wordList.length - 1) {
                 currentWordIndex++;
                 loadWord();
-                messageElement.textContent = 'Next word loaded. Type the highlighted letter!';
+                messageElement.innerHTML = 'Next word loaded. Type the highlighted letter!';
             } else {
                 messageElement.textContent = 'This is the last word.';
             }
@@ -780,15 +791,14 @@
             if (currentLetterIndex >= currentWord.length) {
                 wordsCompleted++;
                 updateScore();
-                speakWord();
-                messageElement.textContent = 'Word completed! Press Next to continue.';
+                messageElement.innerHTML = 'Word completed! <span class="reaa-name">Good Reaa!</span> Press Next to continue.';
             }
         }
 
         // End the game
         function endGame() {
             gameActive = false;
-            messageElement.textContent = `Congratulations! You completed all ${wordList.length} words! Final score: ${score}`;
+            messageElement.innerHTML = `Congratulations! You completed all ${wordList.length} words! Final score: ${score}`;
             wordDisplay.innerHTML = 'Game Complete!';
             startButton.textContent = 'Play Again';
             
@@ -807,7 +817,7 @@
             wordsCompleted = 0;
             updateScore();
             wordDisplay.innerHTML = 'Press Start to begin!';
-            messageElement.textContent = '';
+            messageElement.innerHTML = '';
             startButton.textContent = 'Start Game';
             progressElement.style.width = '0%';
             currentWordNumberElement.textContent = '1';
