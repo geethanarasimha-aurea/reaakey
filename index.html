@@ -360,7 +360,9 @@
         
         <div class="message" id="message"></div>
         
-        
+        <div class="instructions">
+            <p>Type the highlighted letter on the keyboard. Each key press will speak the key name. Complete the word and press Next to continue.</p>
+        </div>
     </div>
 
     <script>
@@ -377,6 +379,9 @@
             "dinosaur", "earth", "flower", "guitar", "horse", "island", "jelly", "kangaroo", "lizard", "mountain",
             "notebook", "ocean", "penguin", "quail", "rocket", "snake", "tiger", "uniform", "volcano", "worm"
         ];
+
+        // Create a shuffled copy of word list for random order
+        let shuffledWordList = [...wordList];
 
         // Keyboard layout based on the provided image
         const keyboardLayout = [
@@ -470,10 +475,10 @@
                 { key: 'space', label: '', width: 300, class: 'special-key' },
                 { key: 'alt', label: 'Alt', width: 60, class: 'special-key' },
                 { key: 'ctrl', label: 'Ctrl', width: 60, class: 'special-key' },
-                { key: 'left', label: '◀', width: 50, class: 'arrow-key' },
-                { key: 'up', label: '▲', width: 50, class: 'arrow-key' },
-                { key: 'down', label: '▼', width: 50, class: 'arrow-key' },
-                { key: 'right', label: '▶', width: 50, class: 'arrow-key' }
+                { key: 'left', label: '◀', width: 50, class: 'arrow-key', noSpeak: true },
+                { key: 'up', label: '▲', width: 50, class: 'arrow-key', noSpeak: true },
+                { key: 'down', label: '▼', width: 50, class: 'arrow-key', noSpeak: true },
+                { key: 'right', label: '▶', width: 50, class: 'arrow-key', noSpeak: true }
             ]
         ];
 
@@ -484,6 +489,7 @@
         let wordsCompleted = 0;
         let gameActive = false;
         let currentWord = '';
+        let isSpeaking = false;
 
         // DOM elements
         const wordDisplay = document.getElementById('word-display');
@@ -498,6 +504,15 @@
         const nextButton = document.getElementById('next-btn');
         const messageElement = document.getElementById('message');
         const progressElement = document.getElementById('progress');
+
+        // Shuffle array function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
         // Initialize the keyboard
         function initializeKeyboard() {
@@ -519,7 +534,7 @@
                     }
                     
                     // Add click event for on-screen keyboard
-                    keyElement.addEventListener('click', () => handleKeyPress(keyConfig.key));
+                    keyElement.addEventListener('click', () => handleKeyPress(keyConfig.key, keyConfig.noSpeak));
                     
                     rowElement.appendChild(keyElement);
                 });
@@ -535,6 +550,10 @@
             currentLetterIndex = 0;
             score = 0;
             wordsCompleted = 0;
+            
+            // Shuffle words for random order
+            shuffledWordList = shuffleArray([...wordList]);
+            
             updateScore();
             loadWord();
             messageElement.innerHTML = 'Type the highlighted letter!';
@@ -544,12 +563,12 @@
 
         // Load a new word
         function loadWord() {
-            if (currentWordIndex >= wordList.length) {
+            if (currentWordIndex >= shuffledWordList.length) {
                 endGame();
                 return;
             }
             
-            currentWord = wordList[currentWordIndex];
+            currentWord = shuffledWordList[currentWordIndex];
             currentLetterIndex = 0;
             currentWordNumberElement.textContent = currentWordIndex + 1;
             
@@ -574,13 +593,17 @@
             }
         }
 
-        // Fast speech function - doesn't wait for previous speech to finish
-        function speakFast(text) {
-            // Cancel any ongoing speech
-            speechSynthesis.cancel();
+        // Speech function with callback support
+        function speakWithCallback(text, callback) {
+            if (isSpeaking) {
+                // If already speaking, wait a bit and try again
+                setTimeout(() => speakWithCallback(text, callback), 100);
+                return;
+            }
             
+            isSpeaking = true;
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9; // Slightly faster
+            utterance.rate = 0.9;
             utterance.pitch = 1.2;
             
             // Try to use a child-friendly voice if available
@@ -594,6 +617,49 @@
             if (childVoice) {
                 utterance.voice = childVoice;
             }
+            
+            utterance.onend = function() {
+                isSpeaking = false;
+                if (callback) callback();
+            };
+            
+            utterance.onerror = function() {
+                isSpeaking = false;
+                if (callback) callback();
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // Fast speech function - doesn't wait for previous speech to finish
+        function speakFast(text) {
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            isSpeaking = false;
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.2;
+            
+            // Try to use a child-friendly voice if available
+            const voices = speechSynthesis.getVoices();
+            const childVoice = voices.find(voice => 
+                voice.name.includes('Child') || 
+                voice.name.includes('Kids') ||
+                voice.name.includes('Google UK English Female')
+            );
+            
+            if (childVoice) {
+                utterance.voice = childVoice;
+            }
+            
+            utterance.onend = function() {
+                isSpeaking = false;
+            };
+            
+            utterance.onerror = function() {
+                isSpeaking = false;
+            };
             
             speechSynthesis.speak(utterance);
         }
@@ -652,11 +718,14 @@
         }
 
         // Handle key press
-        function handleKeyPress(key) {
+        function handleKeyPress(key, noSpeak = false) {
             if (!gameActive) return;
             
-            // Speak the key name immediately
-            speakKey(key);
+            // Don't speak for arrow keys
+            if (!noSpeak) {
+                // Speak the key name immediately
+                speakKey(key);
+            }
             
             // Handle special keys
             if (key === 'backspace') {
@@ -708,12 +777,20 @@
                 
                 // Check if word is completed
                 if (currentLetterIndex >= currentWord.length) {
-                    // Word completed - FIRST speak the word, THEN the motivational message
-                    speakFast(currentWord);
+                    // Word completed - Wait for last letter to finish speaking, then speak full word
                     setTimeout(() => {
-                        speakFast("Good Reaa, next spell with me");
-                        messageElement.innerHTML = 'Word completed! <span class="reaa-name">Good Reaa!</span> Press Next to continue.';
-                    }, 800);
+                        speakWithCallback(currentWord, () => {
+                            // Check if we've completed 5 words for motivational message
+                            if ((currentWordIndex + 1) % 5 === 0) {
+                                setTimeout(() => {
+                                    speakFast("Good Reaa, next spell with me");
+                                    messageElement.innerHTML = 'Word completed! <span class="reaa-name">Good Reaa!</span> Press Next to continue.';
+                                }, 500);
+                            } else {
+                                messageElement.innerHTML = 'Word completed! Press Next to continue.';
+                            }
+                        });
+                    }, 300);
                 } else {
                     // Highlight next key
                     highlightKey(currentWord[currentLetterIndex]);
@@ -755,7 +832,7 @@
         function updateScore() {
             scoreElement.textContent = score;
             wordsCompletedElement.textContent = wordsCompleted;
-            progressElement.style.width = `${(wordsCompleted / wordList.length) * 100}%`;
+            progressElement.style.width = `${(wordsCompleted / shuffledWordList.length) * 100}%`;
         }
 
         // Speak the current word using text-to-speech
@@ -777,7 +854,7 @@
 
         // Navigate to next word
         function navigateToNextWord() {
-            if (currentWordIndex < wordList.length - 1) {
+            if (currentWordIndex < shuffledWordList.length - 1) {
                 currentWordIndex++;
                 loadWord();
                 messageElement.innerHTML = 'Next word loaded. Type the highlighted letter!';
@@ -791,14 +868,14 @@
             if (currentLetterIndex >= currentWord.length) {
                 wordsCompleted++;
                 updateScore();
-                messageElement.innerHTML = 'Word completed! <span class="reaa-name">Good Reaa!</span> Press Next to continue.';
+                messageElement.innerHTML = 'Word completed! Press Next to continue.';
             }
         }
 
         // End the game
         function endGame() {
             gameActive = false;
-            messageElement.innerHTML = `Congratulations! You completed all ${wordList.length} words! Final score: ${score}`;
+            messageElement.innerHTML = `Congratulations! You completed all ${shuffledWordList.length} words! Final score: ${score}`;
             wordDisplay.innerHTML = 'Game Complete!';
             startButton.textContent = 'Play Again';
             
@@ -815,6 +892,10 @@
             currentLetterIndex = 0;
             score = 0;
             wordsCompleted = 0;
+            
+            // Reset to original order
+            shuffledWordList = [...wordList];
+            
             updateScore();
             wordDisplay.innerHTML = 'Press Start to begin!';
             messageElement.innerHTML = '';
@@ -866,15 +947,15 @@
                 return;
             }
             
-            // Handle arrow keys
+            // Handle arrow keys (don't speak for these)
             if (key === 'arrowleft') {
-                handleKeyPress('left');
+                handleKeyPress('left', true);
                 event.preventDefault();
                 return;
             }
             
             if (key === 'arrowright') {
-                handleKeyPress('right');
+                handleKeyPress('right', true);
                 event.preventDefault();
                 return;
             }
