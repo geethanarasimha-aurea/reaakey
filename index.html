@@ -101,12 +101,11 @@
         .key {
             height: 40px;
             margin: 2px;
-            background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
             border: 2px solid #333;
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: bold;
-            color: #333;
+            color: white;
             box-shadow: 0 2px 0 #bdbdbd;
             display: flex;
             justify-content: center;
@@ -116,23 +115,31 @@
             padding: 0 4px;
             pointer-events: none;
             flex-shrink: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         .key.highlight {
-            background: linear-gradient(145deg, #ef476f, #ff6b6b);
+            background: linear-gradient(145deg, #ff0000, #ff6b6b);
             color: white;
-            animation: pulse 0.8s infinite;
+            animation: flashy-pulse 0.6s infinite;
+            box-shadow: 0 0 15px #ff0000, 0 0 30px #ff6b6b;
+            border: 2px solid #ff0000;
+            text-shadow: 0 0 10px white;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-        
-        .special-key {
-            background: linear-gradient(145deg, #bdbdbd, #9e9e9e);
-            color: #333;
+        @keyframes flashy-pulse {
+            0% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 15px #ff0000, 0 0 30px #ff6b6b;
+            }
+            50% { 
+                transform: scale(1.15);
+                box-shadow: 0 0 20px #ff0000, 0 0 40px #ff6b6b;
+            }
+            100% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 15px #ff0000, 0 0 30px #ff6b6b;
+            }
         }
         
         .space-key {
@@ -207,11 +214,13 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
         }
         
         .start-btn {
             background: linear-gradient(to right, #06d6a0, #4cc9f0);
-            color: white;
         }
         
         .reset-btn {
@@ -221,12 +230,10 @@
         
         .speak-btn {
             background: linear-gradient(to right, #ef476f, #ff9e6d);
-            color: white;
         }
         
         .mode-btn {
             background: linear-gradient(to right, #9b59b6, #8e44ad);
-            color: white;
         }
         
         .active-mode {
@@ -239,10 +246,46 @@
             font-size: 1rem;
             min-height: 25px;
             color: #118ab2;
+            font-weight: bold;
         }
         
         .completed-word {
             color: #06d6a0;
+        }
+        
+        /* Left Hand Finger Colors */
+        .left-pinky { 
+            background: linear-gradient(145deg, #ff6b6b, #ff9aa2);
+        }
+        .left-ring { 
+            background: linear-gradient(145deg, #ff9e6d, #ffb6c1);
+        }
+        .left-middle { 
+            background: linear-gradient(145deg, #ffd166, #ffeaa7);
+            color: #333;
+        }
+        .left-index { 
+            background: linear-gradient(145deg, #06d6a0, #4cc9f0);
+        }
+        .left-thumb { 
+            background: linear-gradient(145deg, #9b59b6, #8e44ad);
+        }
+        
+        /* Right Hand Finger Colors */
+        .right-pinky { 
+            background: linear-gradient(145deg, #a29bfe, #6c5ce7);
+        }
+        .right-ring { 
+            background: linear-gradient(145deg, #fd79a8, #e84393);
+        }
+        .right-middle { 
+            background: linear-gradient(145deg, #fdcb6e, #e17055);
+        }
+        .right-index { 
+            background: linear-gradient(145deg, #00b894, #00a085);
+        }
+        .right-thumb { 
+            background: linear-gradient(145deg, #e84393, #fd79a8);
         }
         
         @media (max-width: 900px) {
@@ -310,455 +353,111 @@
             <button class="control-btn mode-btn" id="manual-btn">Manual</button>
         </div>
         
-        <div class="message" id="message">Select mode and press Start Reaa</div>
+        <div class="message" id="message">Select mode and press Start</div>
     </div>
 
     <script>
         // Word list for practice mode
-       const wordList = [ "a", "about", "after", "again", "all", "am", "an", "and", "animal", "another",
-    "any", "are", "around", "as", "ask", "at", "away", "baby", "back", "bad",
-    "ball", "banana", "bath", "be", "bear", "bed", "been", "before", "begin", "best",
-    "better", "big", "bird", "birthday", "black", "blue", "boat", "book", "both", "box",
-    "boy", "bread", "bring", "brother", "brown", "but", "buy", "by", "cake", "call",
-    "came", "can", "car", "card", "care", "carry", "cat", "catch", "chair", "change",
-    "child", "children", "city", "clean", "climb", "clock", "close", "clothes", "cloud", "coat",
-    "cold", "color", "come", "cookie", "cool", "could", "count", "cow", "cut", "dad",
-    "day", "did", "dinner", "do", "doctor", "does", "dog", "doll", "don't", "done",
-    "door", "down", "draw", "dream", "dress", "drink", "drive", "drop", "dry", "duck",
-    "each", "ear", "eat", "egg", "eight", "elephant", "end", "every", "eye", "face",
-    "fall", "family", "far", "farm", "fast", "father", "feet", "find", "fine", "fire",
-    "first", "fish", "five", "fix", "flag", "flower", "fly", "food", "foot", "for",
-    "found", "four", "friend", "frog", "from", "fruit", "fun", "funny", "game", "garden",
-    "gave", "get", "girl", "give", "glad", "glass", "go", "goat", "goes", "going",
-    "gold", "good", "got", "grass", "green", "ground", "grow", "had", "hair", "hand",
-    "happy", "hard", "has", "hat", "have", "he", "head", "hear", "help", "her",
-    "here", "hide", "high", "hill", "him", "his", "hold", "home", "horse", "hot",
-    "house", "how", "hurt", "I", "ice", "if", "in", "into", "is", "it",
-    "its", "jump", "just", "keep", "key", "kind", "king", "kiss", "kitchen", "kite",
-    "knew", "know", "lady", "lake", "land", "large", "last", "late", "laugh", "learn",
-    "leave", "left", "leg", "let", "letter", "light", "like", "line", "lion", "little",
-    "live", "long", "look", "lost", "lot", "love", "made", "make", "man", "many",
-    "may", "me", "mean", "men", "milk", "mine", "mom", "money", "monkey", "moon",
-    "more", "morning", "most", "mother", "mouse", "mouth", "move", "Mr.", "Mrs.", "much",
-    "my", "name", "near", "need", "never", "new", "next", "nice", "night", "nine",
-    "no", "not", "now", "number", "of", "off", "old", "on", "once", "one",
-    "only", "open", "or", "orange", "other", "our", "out", "over", "own", "page",
-    "paint", "paper", "park", "part", "party", "pass", "pen", "pencil", "people", "pet",
-    "pick", "picture", "pie", "pig", "place", "plant", "play", "please", "pretty", "pull",
-    "push", "put", "queen", "question", "quick", "quiet", "rabbit", "rain", "ran", "read",
-    "red", "ride", "right", "ring", "river", "road", "rock", "room", "round", "run",
-    "said", "saw", "say", "school", "sea", "see", "seven", "she", "ship", "shoe",
-    "shop", "short", "show", "sick", "side", "sing", "sister", "sit", "six", "sleep",
-    "small", "smile", "snow", "so", "some", "song", "soon", "sound", "soup", "stand",
-    "star", "start", "stay", "still", "stop", "story", "street", "sun", "table", "take",
-    "talk", "tall", "tea", "teach", "teacher", "tell", "ten", "thank", "that", "the",
-    "their", "them", "then", "there", "these", "they", "thing", "think", "this", "those",
-    "three", "time", "to", "today", "together", "too", "took", "top", "toy", "tree",
-    "try", "two", "under", "up", "upon", "us", "use", "very", "walk", "want",
-    "warm", "was", "wash", "watch", "water", "way", "we", "well", "went", "were",
-    "wet", "what", "when", "where", "which", "white", "who", "why", "will", "wind",
-    "window", "wish", "with", "woman", "wood", "word", "work", "world", "would", "write",
-    "year", "yellow", "yes", "you", "your", "zoo", "about", "above", "across", "act",
-    "active", "add", "afraid", "afternoon", "age", "air", "airplane", "alive", "alligator", "alone",
-    "along", "already", "also", "always", "amazing", "angry", "animal", "answer", "ant", "anyone",
-    "anything", "apartment", "apple", "arm", "art", "ask", "aunt", "autumn", "baby", "backpack",
-    "badge", "bag", "bake", "balloon", "banana", "band", "bank", "baseball", "basket", "bathroom",
-    "beach", "bean", "bear", "beard", "beautiful", "bedroom", "bee", "beef", "before", "beginning",
-    "behind", "bell", "below", "belt", "bench", "bend", "beside", "best", "better", "between",
-    "bicycle", "big", "bike", "bill", "bird", "birth", "birthday", "bite", "black", "blanket",
-    "block", "blow", "blue", "board", "boat", "body", "bone", "book", "boot", "born",
-    "both", "bottle", "bottom", "bowl", "box", "boy", "brain", "brave", "bread", "break",
-    "breakfast", "bridge", "bright", "bring", "broke", "brother", "brought", "brown", "brush", "bug",
-    "build", "building", "bunny", "burn", "bus", "busy", "but", "butter", "butterfly", "button",
-    "buy", "by", "cabin", "cage", "cake", "call", "camel", "camera", "camp", "can",
-    "candy", "cap", "car", "card", "care", "careful", "carrot", "carry", "cart", "case",
-    "cat", "catch", "cause", "center", "cent", "certain", "chair", "chalk", "chance", "change",
-    "chart", "check", "cheek", "cheese", "cherry", "chicken", "child", "chin", "chip", "chocolate",
-    "choose", "chop", "circle", "city", "clap", "class", "classroom", "claw", "clean", "clear",
-    "climb", "clock", "close", "cloth", "cloud", "clown", "club", "coat", "coffee", "cold",
-    "collar", "color", "comb", "come", "common", "cook", "cool", "copy", "corn", "corner",
-    "cost", "cotton", "couch", "cough", "count", "country", "course", "cover", "cow", "cowboy",
-    "crab", "crayon", "crazy", "cream", "crop", "cross", "crowd", "cry", "cup", "curtain",
-    "cut", "cute", "dad", "daddy", "dance", "danger", "dark", "date", "daughter", "day",
-    "dead", "dear", "death", "decide", "deep", "deer", "desk", "destroy", "diamond", "did",
-    "die", "different", "dig", "dinner", "dinosaur", "dirty", "discover", "dish", "do", "doctor",
-    "does", "dog", "doll", "dollar", "done", "donkey", "door", "dot", "double", "doubt",
-    "down", "dozen", "drag", "dragon", "draw", "dream", "dress", "drink", "drive", "drop",
-    "drum", "dry", "duck", "dumb", "during", "dust", "duty", "each", "eager", "ear",
-    "early", "earn", "earth", "east", "easy", "eat", "edge", "egg", "eight", "either",
-    "elbow", "elder", "electric", "elephant", "else", "empty", "end", "enemy", "energy", "engine",
-    "enjoy", "enough", "enter", "entire", "equal", "escape", "even", "evening", "event", "ever",
-    "every", "exact", "example", "except", "excite", "exercise", "expect", "explain", "eye", "face",
-    "fact", "fair", "fall", "family", "famous", "far", "farm", "fast", "fat", "father",
-    "favor", "fear", "feed", "feel", "feet", "fell", "felt", "fence", "few", "field",
-    "fierce", "fight", "figure", "fill", "film", "final", "find", "fine", "finger", "finish",
-    "fire", "first", "fish", "fit", "five", "fix", "flag", "flame", "flat", "flew",
-    "float", "floor", "flour", "flower", "fly", "fold", "follow", "food", "fool", "foot",
-    "for", "force", "forest", "forget", "fork", "form", "fort", "forward", "found", "four",
-    "fox", "free", "freeze", "fresh", "friend", "frog", "from", "front", "fruit", "full",
-    "fun", "funny", "fur", "game", "garage", "garden", "gas", "gate", "gave", "gear",
-    "gentle", "get", "giant", "gift", "girl", "give", "glad", "glass", "glove", "go",
-    "goal", "goat", "god", "gold", "gone", "good", "got", "govern", "grab", "grade",
-    "grain", "grand", "grass", "gray", "great", "green", "greet", "grew", "grind", "ground",
-    "group", "grow", "guard", "guess", "guide", "guitar", "gun", "guy", "hair", "half",
-    "hall", "hammer", "hand", "handle", "hang", "happen", "happy", "hard", "harm", "hat",
-    "hate", "have", "he", "head", "health", "hear", "heard", "heart", "heat", "heavy",
-    "heel", "height", "held", "hello", "help", "her", "here", "hero", "hers", "hide",
-    "high", "hill", "him", "his", "hit", "hold", "hole", "holiday", "home", "honest",
-    "honey", "hope", "horn", "horse", "hospital", "hot", "hour", "house", "how", "huge",
-    "human", "hundred", "hungry", "hunt", "hurry", "hurt", "husband", "ice", "idea", "if",
-    "ill", "image", "imagine", "important", "in", "inch", "include", "indeed", "inside", "instead",
-    "interest", "into", "iron", "island", "it", "its", "jacket", "jam", "job", "join",
-    "joke", "journey", "joy", "judge", "juice", "jump", "just", "keep", "key", "kid",
-    "kill", "kind", "king", "kiss", "kitchen", "kite", "knee", "knife", "knock", "know",
-    "ladder", "lady", "lake", "lamp", "land", "large", "last", "late", "laugh", "law",
-    "lay", "lazy", "lead", "leaf", "learn", "least", "leave", "left", "leg", "lend",
-    "length", "less", "lesson", "let", "letter", "level", "library", "lie", "life", "lift",
-    "light", "like", "line", "lion", "lip", "list", "listen", "little", "live", "load",
-    "local", "lock", "log", "long", "look", "lost", "lot", "loud", "love", "low",
-    "luck", "lunch", "machine", "mad", "mail", "main", "make", "male", "man", "many",
-    "map", "mark", "market", "marry", "mass", "master", "match", "material", "math", "matter",
-    "may", "maybe", "me", "meal", "mean", "measure", "meat", "medal", "meet", "member",
-    "memory", "men", "mention", "metal", "middle", "might", "mile", "milk", "million", "mind",
-    "mine", "minute", "miss", "mix", "model", "modern", "moment", "money", "monkey", "month",
-    "moon", "more", "morning", "most", "mother", "motion", "mountain", "mouse", "mouth", "move",
-    "movie", "much", "mud", "music", "must", "my", "myself", "nail", "name", "narrow",
-    "nation", "nature", "near", "neat", "necessary", "neck", "need", "needle", "neighbor", "neither",
-    "nest", "net", "never", "new", "news", "next", "nice", "night", "nine", "no",
-    "nobody", "nod", "noise", "none", "noon", "nor", "north", "nose", "not", "note",
-    "nothing", "notice", "noun", "now", "number", "nurse", "nut", "o'clock", "object", "ocean",
-    "of", "off", "offer", "office", "often", "oh", "oil", "old", "on", "once",
-    "one", "only", "open", "operate", "or", "orange", "order", "other", "our", "out",
-    "outside", "over", "own", "page", "paint", "pair", "pan", "paper", "parent", "park",
-    "part", "party", "pass", "past", "path", "pay", "peace", "pen", "pencil", "people",
-    "pepper", "perfect", "period", "person", "pet", "phone", "piano", "pick", "picture", "pie",
-    "piece", "pig", "pin", "pink", "pipe", "pitch", "place", "plan", "plane", "plant",
-    "plastic", "plate", "play", "please", "pleasure", "plenty", "pocket", "point", "poison", "police",
-    "polite", "pool", "poor", "pop", "popular", "position", "possible", "post", "pot", "potato",
-    "pound", "power", "practice", "prepare", "present", "press", "pretty", "price", "prince", "print",
-    "prison", "private", "prize", "probably", "problem", "produce", "promise", "proof", "proper", "protect",
-    "proud", "prove", "provide", "public", "pull", "punch", "punish", "pupil", "pure", "purple",
-    "purpose", "push", "put", "quarter", "queen", "question", "quick", "quiet", "quite", "rabbit",
-    "race", "radio", "rail", "rain", "raise", "ran", "range", "rapid", "rat", "rate",
-    "rather", "raw", "reach", "read", "ready", "real", "reason", "receive", "record", "red",
-    "refer", "refuse", "region", "remember", "repeat", "reply", "report", "represent", "require", "rest",
-    "result", "return", "review", "rhyme", "rice", "rich", "ride", "right", "ring", "rise",
-    "river", "road", "rock", "role", "roll", "roof", "room", "root", "rope", "rose",
-    "rough", "round", "row", "rub", "rule", "run", "rush", "sad", "safe", "said",
-    "sail", "salt", "same", "sand", "sat", "save", "saw", "say", "scale", "school",
-    "science", "score", "sea", "search", "season", "seat", "second", "secret", "section", "see",
-    "seed", "seek", "seem", "select", "self", "sell", "send", "sense", "sent", "sentence",
-    "separate", "serve", "set", "settle", "seven", "several", "shade", "shadow", "shake", "shall",
-    "shape", "share", "sharp", "she", "sheep", "sheet", "shelf", "shell", "shine", "ship",
-    "shirt", "shoe", "shoot", "shop", "short", "should", "shoulder", "shout", "show", "shut",
-    "sick", "side", "sign", "silent", "silk", "silly", "silver", "similar", "simple", "since",
-    "sing", "single", "sink", "sister", "sit", "six", "size", "skill", "skin", "sky",
-    "sleep", "slip", "slow", "small", "smell", "smile", "smoke", "smooth", "snake", "snow",
-    "so", "soap", "soccer", "social", "sock", "soft", "soil", "soldier", "solution", "solve",
-    "some", "son", "song", "soon", "sorry", "sort", "sound", "soup", "south", "space",
-    "speak", "special", "speed", "spell", "spend", "spirit", "spoon", "sport", "spread", "spring",
-    "square", "stand", "star", "start", "state", "station", "stay", "steal", "steam", "steel",
-    "step", "stick", "still", "sting", "stock", "stomach", "stone", "stop", "store", "storm",
-    "story", "straight", "strange", "street", "stretch", "strike", "strong", "structure", "student", "study",
-    "stuff", "stupid", "subject", "success", "such", "sudden", "sugar", "suggest", "suit", "summer",
-    "sun", "super", "supply", "support", "sure", "surface", "surprise", "sweet", "swim", "swing",
-    "switch", "symbol", "system", "table", "tail", "take", "talk", "tall", "taste", "taxi",
-    "tea", "teach", "team", "tear", "teeth", "telephone", "television", "tell", "temperature", "ten",
-    "tennis", "tent", "term", "test", "than", "thank", "that", "the", "theater", "their",
-    "them", "then", "there", "these", "they", "thick", "thin", "thing", "think", "third",
-    "this", "those", "though", "thought", "thousand", "thread", "three", "throat", "through", "throw",
-    "thus", "ticket", "tie", "tiger", "tight", "till", "time", "tiny", "tip", "tire",
-    "tired", "title", "to", "today", "toe", "together", "toilet", "told", "tomato", "tomorrow",
-    "tone", "tongue", "tonight", "too", "took", "tool", "tooth", "top", "total", "touch",
-    "toward", "tower", "town", "toy", "track", "trade", "traffic", "train", "travel", "tree",
-    "triangle", "trip", "trouble", "truck", "true", "trust", "truth", "try", "tube", "turn",
-    "twelve", "twenty", "twice", "two", "type", "ugly", "uncle", "under", "understand", "unit",
-    "until", "up", "upon", "us", "use", "usual", "vacation", "value", "various", "vegetable",
-    "very", "victory", "video", "view", "village", "visit", "voice", "vote", "wait", "walk",
-    "wall", "want", "war", "warm", "was", "wash", "watch", "water", "wave", "way",
-    "we", "weak", "wear", "weather", "web", "website", "week", "weight", "welcome", "well",
-    "went", "were", "west", "wet", "whale", "what", "wheel", "when", "where", "whether",
-    "which", "while", "white", "who", "whole", "why", "wide", "wife", "wild", "will",
-    "win", "wind", "window", "wing", "winter", "wire", "wise", "wish", "with", "within",
-    "without", "woman", "wonder", "wood", "word", "work", "world", "worry", "worth", "would",
-    "write", "wrong", "yard", "year", "yellow", "yes", "yesterday", "yet", "you", "young",
-    "your", "zebra", "zero", "zoo", "ability", "above", "absent", "accept", "accident", "account", "ache", "acorn", "across", "act",
-    "action", "active", "actor", "actress", "actual", "add", "address", "admire", "admit", "adult",
-    "advance", "advantage", "adventure", "advice", "affect", "afraid", "after", "afternoon", "again", "against",
-    "age", "ago", "agree", "ahead", "aid", "aim", "air", "airplane", "airport", "alarm",
-    "alike", "alive", "all", "alley", "allow", "almost", "alone", "along", "aloud", "alphabet",
-    "already", "also", "although", "always", "am", "amaze", "among", "amount", "an", "anchor",
-    "ancient", "and", "angel", "anger", "angle", "angry", "animal", "ankle", "annoy", "another",
-    "answer", "ant", "any", "anybody", "anyone", "anything", "anywhere", "apart", "apartment", "ape",
-    "appear", "apple", "apply", "appoint", "approve", "april", "apron", "area", "argue", "arm",
-    "army", "around", "arrange", "arrest", "arrive", "arrow", "art", "article", "as", "ash",
-    "ask", "asleep", "assistant", "astonish", "at", "attack", "attempt", "attend", "attention", "attic",
-    "august", "aunt", "author", "auto", "autumn", "avenue", "average", "avoid", "awake", "award",
-    "aware", "away", "awful", "ax", "baby", "back", "background", "backward", "bacon", "bad",
-    "badge", "bag", "bake", "balance", "ball", "balloon", "banana", "band", "bang", "bank",
-    "bar", "barber", "bare", "bark", "barn", "base", "baseball", "basic", "basin", "basket",
-    "bat", "bath", "battle", "bay", "be", "beach", "bead", "beam", "bean", "bear",
-    "beard", "beast", "beat", "beautiful", "beauty", "because", "become", "bed", "bedroom", "bee",
-    "beef", "been", "beer", "beet", "before", "beg", "begin", "behave", "behind", "being",
-    "believe", "bell", "belong", "below", "belt", "bench", "bend", "beneath", "berry", "beside",
-    "best", "bet", "better", "between", "beyond", "bicycle", "big", "bike", "bill", "bird",
-    "birth", "birthday", "bit", "bite", "bitter", "black", "blade", "blame", "blank", "blanket",
-    "blast", "bleed", "bless", "blind", "block", "blood", "bloom", "blow", "blue", "board",
-    "boast", "boat", "body", "boil", "bold", "bone", "book", "boom", "boot", "border",
-    "bore", "born", "borrow", "boss", "both", "bother", "bottle", "bottom", "bounce", "bow",
-    "bowl", "box", "boy", "brain", "brake", "branch", "brass", "brave", "bread", "break",
-    "breakfast", "breath", "breathe", "breeze", "brick", "bridge", "bright", "bring", "broad", "broke",
-    "brook", "broom", "brother", "brought", "brown", "brush", "bubble", "bucket", "bud", "build",
-    "building", "bulb", "bump", "bunch", "bundle", "burn", "burst", "bury", "bus", "bush",
-    "business", "busy", "but", "butter", "button", "buy", "by", "cabin", "cage", "cake",
-    "calendar", "call", "calm", "camel", "camera", "camp", "can", "canal", "candle", "candy",
-    "cane", "cannon", "canoe", "cap", "cape", "capital", "captain", "car", "card", "care",
-    "careful", "careless", "carpet", "carriage", "carry", "cart", "carve", "case", "cash", "cast",
-    "cat", "catch", "cattle", "caught", "cause", "cave", "ceiling", "cell", "cent", "center",
-    "central", "century", "certain", "chain", "chair", "chalk", "chance", "change", "chapter", "character",
-    "charge", "charm", "chart", "chase", "cheap", "cheat", "check", "cheek", "cheer", "cheese",
-    "cherry", "chest", "chew", "chicken", "chief", "child", "childhood", "chimney", "chin", "china",
-    "chip", "chocolate", "choice", "choose", "chop", "church", "circle", "city", "clap", "class",
-    "classmate", "classroom", "claw", "clay", "clean", "clear", "clerk", "clever", "cliff", "climb",
-    "clock", "close", "cloth", "clothes", "cloud", "cloudy", "clown", "club", "clump", "coach",
-    "coal", "coast", "coat", "cobweb", "coffee", "coin", "cold", "collar", "collect", "college",
-    "color", "comb", "come", "comfort", "comic", "company", "compare", "complete", "computer", "concern",
-    "concert", "condition", "connect", "consider", "contain", "content", "continue", "control", "conversation", "cook",
-    "cool", "copper", "copy", "cord", "corn", "corner", "correct", "cost", "cotton", "couch",
-    "cough", "could", "count", "country", "couple", "courage", "course", "court", "cousin", "cover",
-    "cow", "coward", "cowboy", "cozy", "crack", "cream", "create", "creature", "crew", "crop",
-    "cross", "crow", "crowd", "crown", "cruel", "crush", "cry", "cub", "cup", "cupboard",
-    "cure", "curious", "curl", "curtain", "curve", "cushion", "custom", "cut", "cute", "cycle",
-    "dad", "daily", "dairy", "dam", "damage", "damp", "dance", "danger", "dare", "dark",
-    "darling", "dash", "date", "daughter", "dawn", "day", "dead", "deaf", "deal", "dear",
-    "death", "decide", "decimal", "deep", "deer", "defeat", "defend", "degree", "delay", "delicate",
-    "delicious", "delight", "deliver", "demand", "dentist", "deny", "department", "depend", "depth", "describe",
-    "desert", "design", "desk", "destroy", "detail", "detective", "develop", "devil", "diamond", "did",
-    "die", "difference", "different", "difficult", "dig", "dinner", "dinosaur", "direct", "direction", "dirt",
-    "dirty", "disappear", "discover", "discuss", "disease", "dish", "dismiss", "distance", "distant", "ditch",
-    "dive", "divide", "doctor", "does", "dog", "doll", "dollar", "done", "donkey", "door",
-    "dot", "double", "doubt", "down", "dozen", "drag", "dragon", "drain", "draw", "drawer",
-    "dream", "dress", "drew", "dried", "drink", "drive", "drop", "drove", "dry", "duck",
-    "due", "dug", "dull", "during", "dust", "duty", "each", "eager", "eagle", "ear",
-    "early", "earn", "earth", "east", "easy", "eat", "edge", "education", "effect", "egg",
-    "eight", "either", "elbow", "elder", "electric", "elephant", "eleven", "else", "empty", "end",
-    "enemy", "energy", "engine", "engineer", "enjoy", "enough", "enter", "entire", "envelope", "equal",
-    "equator", "escape", "especially", "even", "evening", "event", "ever", "every", "everybody", "everyone",
-    "everything", "everywhere", "exact", "examine", "example", "excellent", "except", "excite", "excuse", "exercise",
-    "expect", "expensive", "experience", "experiment", "explain", "explore", "express", "extra", "eye", "face",
-    "fact", "factory", "fail", "faint", "fair", "fairy", "faith", "fall", "false", "family",
-    "famous", "fan", "fancy", "far", "farm", "farmer", "fashion", "fast", "fat", "father",
-    "fault", "favor", "favorite", "fear", "feast", "feather", "february", "fed", "feed", "feel",
-    "feet", "fell", "fellow", "felt", "fence", "fern", "festival", "fetch", "fever", "few",
-    "field", "fierce", "fifteen", "fifth", "fifty", "fig", "fight", "figure", "file", "fill",
-    "film", "final", "find", "fine", "finger", "finish", "fire", "firm", "first", "fish",
-    "fist", "fit", "five", "fix", "flag", "flame", "flash", "flat", "flew", "float",
-    "flock", "flood", "floor", "flour", "flow", "flower", "fly", "foam", "fog", "fold",
-    "follow", "fond", "food", "fool", "foot", "for", "force", "foreign", "forest", "forget",
-    "fork", "form", "fort", "forth", "fortunate", "fortune", "forty", "forward", "fought", "found",
-    "fountain", "four", "fox", "frame", "free", "freedom", "freeze", "fresh", "friend", "fright",
-    "frog", "from", "front", "frost", "frown", "fruit", "fry", "fuel", "full", "fun",
-    "funny", "fur", "furniture", "further", "future", "gain", "game", "garage", "garden", "gas",
-    "gate", "gather", "gave", "gay", "gear", "general", "gentle", "gentleman", "get", "giant",
-    "gift", "girl", "give", "glad", "glass", "globe", "glory", "glove", "glow", "go",
-    "goal", "goat", "god", "gold", "golden", "gone", "good", "goose", "got", "govern",
-    "gown", "grab", "grace", "grade", "grain", "grand", "grandfather", "grandmother", "grant", "grape",
-    "grass", "grave", "gray", "great", "green", "greet", "grew", "grind", "ground", "group",
-    "grow", "guard", "guess", "guest", "guide", "gulf", "gun", "guy", "habit", "had",
-    "hair", "half", "hall", "ham", "hand", "handle", "handsome", "hang", "happen", "happy",
-    "harbor", "hard", "hardly", "hare", "harm", "harvest", "has", "hat", "hate", "have",
-    "he", "head", "health", "hear", "heard", "heart", "heat", "heavy", "hedge", "heel",
-    "height", "held", "hell", "hello", "help", "hen", "her", "here", "hero", "hers",
-    "herself", "hid", "hide", "high", "hill", "him", "himself", "his", "history", "hit",
-    "hobby", "hold", "hole", "holiday", "holy", "home", "honest", "honey", "honor", "hope",
-    "horn", "horse", "hospital", "hot", "hour", "house", "how", "however", "huge", "human",
-    "humble", "hundred", "hung", "hungry", "hunt", "hurry", "hurt", "husband", "hut", "ice",
-    "idea", "ideal", "if", "ill", "image", "imagine", "important", "impossible", "improve", "in",
-    "inch", "include", "income", "increase", "indeed", "industry", "ink", "insect", "inside", "instead",
-    "instrument", "interest", "into", "invent", "iron", "island", "it", "its", "itself", "jacket",
-    "jam", "january", "jar", "job", "join", "joke", "journey", "joy", "judge", "juice",
-    "july", "jump", "june", "just", "keep", "kept", "key", "kid", "kill", "kind",
-    "king", "kingdom", "kiss", "kitchen", "kite", "knee", "knife", "knock", "knot", "know",
-    "known", "ladder", "lady", "lake", "lamb", "lamp", "land", "lane", "language", "large",
-    "last", "late", "laugh", "law", "lay", "lazy", "lead", "leaf", "learn", "least",
-    "leather", "leave", "led", "left", "leg", "lend", "length", "less", "lesson", "let",
-    "letter", "level", "library", "lid", "lie", "life", "lift", "light", "like", "limb",
-    "line", "lion", "lip", "list", "listen", "little", "live", "load", "loaf", "local",
-    "lock", "log", "lonely", "long", "look", "loose", "lose", "loss", "lost", "lot",
-    "loud", "love", "low", "luck", "lucky", "lunch", "lung", "machine", "mad", "made",
-    "magic", "mail", "main", "major", "make", "male", "man", "manage", "manner", "many",
-    "map", "march", "mark", "market", "marriage", "marry", "mass", "master", "match", "material",
-    "mathematics", "matter", "may", "maybe", "me", "meal", "mean", "measure", "meat", "medicine",
-    "meet", "melody", "member", "memory", "men", "mention", "merry", "message", "metal", "method",
-    "middle", "might", "mile", "milk", "million", "mind", "mine", "minute", "mirror", "miss",
-    "mistake", "mix", "model", "modern", "moment", "money", "monkey", "month", "moon", "more",
-    "morning", "most", "mother", "motion", "motor", "mountain", "mouse", "mouth", "move", "movie",
-    "much", "mud", "multiply", "muscle", "music", "must", "my", "myself", "mystery", "nail",
-    "name", "narrow", "nation", "natural", "nature", "navy", "near", "nearly", "neat", "necessary",
-    "neck", "need", "needle", "neighbor", "neither", "nerve", "nest", "net", "never", "new",
-    "news", "newspaper", "next", "nice", "night", "nine", "no", "noble", "nobody", "nod",
-    "noise", "none", "noon", "nor", "north", "nose", "not", "note", "nothing", "notice",
-    "noun", "now", "number", "nurse", "nut", "oak", "oar", "obey", "object", "ocean",
-    "o'clock", "october", "odd", "of", "off", "offer", "office", "officer", "often", "oh",
-    "oil", "old", "on", "once", "one", "only", "open", "operate", "opinion", "opportunity",
-    "or", "orange", "order", "organ", "original", "other", "ought", "our", "out", "outside",
-    "over", "own", "owner", "ox", "pack", "page", "paid", "pail", "pain", "paint",
-    "pair", "palace", "pale", "pan", "paper", "parent", "park", "part", "particular", "party",
-    "pass", "past", "paste", "path", "pattern", "pay", "peace", "pear", "pen", "pencil",
-    "people", "pepper", "perfect", "period", "person", "pet", "phone", "piano", "pick", "picture",
-    "pie", "piece", "pig", "pile", "pin", "pink", "pint", "pipe", "pitch", "place",
-    "plain", "plan", "plane", "plant", "plastic", "plate", "play", "pleasant", "please", "pleasure",
-    "plenty", "pocket", "poem", "point", "poison", "pole", "police", "polite", "pool", "poor",
-    "pop", "popular", "population", "port", "position", "possible", "post", "pot", "potato", "pound",
-    "pour", "powder", "power", "practice", "prepare", "present", "president", "press", "pretty", "prevent",
-    "price", "pride", "prime", "prince", "print", "prison", "private", "prize", "probably", "problem",
-    "produce", "product", "program", "promise", "proof", "proper", "property", "protect", "proud", "prove",
-    "provide", "public", "pull", "pump", "punish", "pupil", "pure", "purple", "purpose", "push",
-    "put", "quarter", "queen", "question", "quick", "quiet", "quite", "rabbit", "race", "radio",
-    "rail", "railroad", "rain", "raise", "ran", "range", "rapid", "rat", "rate", "rather",
-    "raw", "ray", "reach", "read", "ready", "real", "realize", "reason", "receive", "recent",
-    "record", "red", "refer", "refuse", "region", "regular", "relation", "remember", "remove", "rent",
-    "repair", "repeat", "reply", "report", "represent", "require", "rest", "result", "return", "review",
-    "rhyme", "rice", "rich", "ride", "right", "ring", "rise", "river", "road", "rock",
-    "rocket", "rod", "roll", "roof", "room", "root", "rope", "rose", "rough", "round",
-    "row", "rub", "rubber", "rude", "rule", "ruler", "run", "rush", "sad", "safe",
-    "sail", "sailor", "salad", "sale", "salt", "same", "sand", "sat", "satellite", "satisfy",
-    "save", "saw", "say", "scale", "school", "science", "scissors", "score", "sea", "search",
-    "season", "seat", "second", "secret", "section", "see", "seed", "seek", "seem", "select",
-    "self", "sell", "send", "sense", "sent", "sentence", "separate", "serious", "serve", "set",
-    "settle", "seven", "several", "shade", "shadow", "shake", "shall", "shape", "share", "sharp",
-    "she", "sheep", "sheet", "shelf", "shell", "shine", "ship", "shirt", "shoe", "shoot",
-    "shop", "shore", "short", "should", "shoulder", "shout", "show", "shut", "sick", "side",
-    "sight", "sign", "signal", "silence", "silent", "silk", "silly", "silver", "similar", "simple",
-    "since", "sing", "single", "sink", "sir", "sister", "sit", "six", "size", "skill",
-    "skin", "sky", "slave", "sleep", "slip", "slow", "small", "smell", "smile", "smoke",
-    "smooth", "snake", "snow", "so", "soap", "soccer", "social", "sock", "soft", "soil",
-    "soldier", "solution", "solve", "some", "son", "song", "soon", "sorry", "sort", "sound",
-    "soup", "south", "space", "speak", "special", "speed", "spell", "spend", "spirit", "spoon",
-    "sport", "spread", "spring", "square", "stage", "stair", "stand", "star", "start", "state",
-    "station", "stay", "steal", "steam", "steel", "step", "stick", "still", "sting", "stock",
-    "stomach", "stone", "stop", "store", "storm", "story", "straight", "strange", "street", "stretch",
-    "strike", "string", "strong", "structure", "student", "study", "stuff", "stupid", "subject", "substance",
-    "success", "such", "sudden", "sugar", "suggest", "suit", "summer", "sun", "super", "supply",
-    "support", "suppose", "sure", "surface", "surprise", "swallow", "sweet", "swim", "swing", "switch",
-    "symbol", "system", "table", "tail", "take", "talk", "tall", "taste", "taxi", "tea",
-    "teach", "team", "tear", "teeth", "telephone", "television", "tell", "temperature", "ten", "tennis",
-    "tent", "term", "test", "than", "thank", "that", "the", "theater", "their", "them",
-    "then", "there", "these", "they", "thick", "thin", "thing", "think", "third", "this",
-    "those", "though", "thought", "thousand", "thread", "three", "throat", "through", "throw", "thumb",
-    "thus", "ticket", "tide", "tie", "tiger", "tight", "till", "time", "tiny", "tip",
-    "tire", "tired", "title", "to", "tobacco", "today", "toe", "together", "toilet", "told",
-    "tomato", "tomorrow", "tone", "tongue", "tonight", "too", "took", "tool", "tooth", "top",
-    "total", "touch", "toward", "tower", "town", "toy", "track", "trade", "traffic", "train",
-    "transport", "trap", "travel", "tree", "triangle", "trip", "trouble", "truck", "true", "trust",
-    "truth", "try", "tube", "tune", "turn", "twelve", "twenty", "twice", "two", "type",
-    "ugly", "uncle", "under", "understand", "unit", "unite", "university", "until", "up", "upon",
-    "upper", "upset", "us", "use", "usual", "vacation", "valley", "value", "various", "vegetable",
-    "very", "vessel", "victory", "view", "village", "violence", "visit", "voice", "vote", "wage",
-    "wait", "wake", "walk", "wall", "want", "war", "warm", "was", "wash", "waste",
-    "watch", "water", "wave", "way", "we", "weak", "wealth", "weapon", "wear", "weather",
-    "web", "website", "wedding", "week", "weight", "welcome", "well", "went", "were", "west",
-    "wet", "whale", "what", "wheat", "wheel", "when", "where", "whether", "which", "while",
-    "whisper", "white", "who", "whole", "whom", "whose", "why", "wide", "wife", "wild",
-    "will", "win", "wind", "window", "wing", "winter", "wire", "wise", "wish", "with",
-    "within", "without", "wolf", "woman", "wonder", "wood", "wool", "word", "work", "world",
-    "worry", "worth", "would", "wound", "write", "wrong", "yard", "year", "yellow", "yes",
-    "yesterday", "yet", "you", "young", "your", "yours", "youth", "zero", "zebra", "zoo"
-];
+        const wordList = [
+            "apple", "ball", "cat", "dog", "elephant", "fish", "goat", "hat", "ice", "jump",
+            "kite", "lion", "monkey", "nest", "orange", "pig", "queen", "rabbit", "sun", "tree",
+            "umbrella", "violin", "water", "xylophone", "yoyo", "zebra", "ant", "bird", "car", "duck",
+            "egg", "frog", "girl", "house", "igloo", "jacket", "king", "lamp", "moon", "nose"
+        ];
 
-        // Updated Keyboard layout with realistic PC layout (removed duplicate bottom row)
+        // Updated Keyboard layout with left and right hand finger color coding
         const keyboardLayout = [
             // First row - Function keys
             [
-                { key: 'esc', label: 'Esc', width: 60, class: 'special-key' },
-                { key: 'f1', label: 'F1', width: 50, class: 'function-key' },
-                { key: 'f2', label: 'F2', width: 50, class: 'function-key' },
-                { key: 'f3', label: 'F3', width: 50, class: 'function-key' },
-                { key: 'f4', label: 'F4', width: 50, class: 'function-key' },
-                { key: 'f5', label: 'F5', width: 50, class: 'function-key' },
-                { key: 'f6', label: 'F6', width: 50, class: 'function-key' },
-                { key: 'f7', label: 'F7', width: 50, class: 'function-key' },
-                { key: 'f8', label: 'F8', width: 50, class: 'function-key' },
-                { key: 'f9', label: 'F9', width: 50, class: 'function-key' },
-                { key: 'f10', label: 'F10', width: 50, class: 'function-key' },
-                { key: 'f11', label: 'F11', width: 50, class: 'function-key' },
-                { key: 'f12', label: 'F12', width: 50, class: 'function-key' },
-                { key: 'del', label: 'Del', width: 60, class: 'special-key' }
+                { key: 'esc', label: 'Esc', width: 60, class: 'left-pinky' },
+                { key: 'f1', label: 'F1', width: 50, class: 'left-pinky' },
+                { key: 'f2', label: 'F2', width: 50, class: 'left-pinky' },
+                { key: 'f3', label: 'F3', width: 50, class: 'left-pinky' },
+                { key: 'f4', label: 'F4', width: 50, class: 'left-pinky' },
+                { key: 'f5', label: 'F5', width: 50, class: 'left-pinky' },
+                { key: 'f6', label: 'F6', width: 50, class: 'right-pinky' },
+                { key: 'f7', label: 'F7', width: 50, class: 'right-pinky' },
+                { key: 'f8', label: 'F8', width: 50, class: 'right-pinky' },
+                { key: 'f9', label: 'F9', width: 50, class: 'right-pinky' },
+                { key: 'f10', label: 'F10', width: 50, class: 'right-pinky' },
+                { key: 'f11', label: 'F11', width: 50, class: 'right-pinky' },
+                { key: 'f12', label: 'F12', width: 50, class: 'right-pinky' },
+                { key: 'del', label: 'Del', width: 60, class: 'right-pinky' }
             ],
-            // Second row - Number row with ~
+            // Second row - Number row
             [
-                { key: '`', label: '` ~', width: 50 },
-                { key: '1', label: '1 !', width: 50 },
-                { key: '2', label: '2 @', width: 50 },
-                { key: '3', label: '3 #', width: 50 },
-                { key: '4', label: '4 $', width: 50 },
-                { key: '5', label: '5 %', width: 50 },
-                { key: '6', label: '6 ^', width: 50 },
-                { key: '7', label: '7 &', width: 50 },
-                { key: '8', label: '8 *', width: 50 },
-                { key: '9', label: '9 (', width: 50 },
-                { key: '0', label: '0 )', width: 50 },
-                { key: '-', label: '- _', width: 50 },
-                { key: '=', label: '= +', width: 50 },
-                { key: 'backspace', label: 'Backspace', width: 90, class: 'special-key' }
+                { key: '`', label: '` ~', width: 50, class: 'left-pinky' },
+                { key: '1', label: '1 !', width: 50, class: 'left-pinky' },
+                { key: '2', label: '2 @', width: 50, class: 'left-ring' },
+                { key: '3', label: '3 #', width: 50, class: 'left-middle' },
+                { key: '4', label: '4 $', width: 50, class: 'left-index' },
+                { key: '5', label: '5 %', width: 50, class: 'left-index' },
+                { key: '6', label: '6 ^', width: 50, class: 'right-index' },
+                { key: '7', label: '7 &', width: 50, class: 'right-index' },
+                { key: '8', label: '8 *', width: 50, class: 'right-middle' },
+                { key: '9', label: '9 (', width: 50, class: 'right-ring' },
+                { key: '0', label: '0 )', width: 50, class: 'right-pinky' },
+                { key: '-', label: '- _', width: 50, class: 'right-pinky' },
+                { key: '=', label: '= +', width: 50, class: 'right-pinky' },
+                { key: 'backspace', label: 'Backspace', width: 90, class: 'right-pinky' }
             ],
             // Third row - Tab row
             [
-                { key: 'tab', label: 'Tab', width: 70, class: 'special-key' },
-                { key: 'q', label: 'Q', width: 50 },
-                { key: 'w', label: 'W', width: 50 },
-                { key: 'e', label: 'E', width: 50 },
-                { key: 'r', label: 'R', width: 50 },
-                { key: 't', label: 'T', width: 50 },
-                { key: 'y', label: 'Y', width: 50 },
-                { key: 'u', label: 'U', width: 50 },
-                { key: 'i', label: 'I', width: 50 },
-                { key: 'o', label: 'O', width: 50 },
-                { key: 'p', label: 'P', width: 50 },
-                { key: '[', label: '[ {', width: 50 },
-                { key: ']', label: '] }', width: 50 },
-                { key: '\\', label: '\\ |', width: 70, class: 'special-key' }
+                { key: 'tab', label: 'Tab', width: 70, class: 'left-pinky' },
+                { key: 'q', label: 'Q', width: 50, class: 'left-pinky' },
+                { key: 'w', label: 'W', width: 50, class: 'left-ring' },
+                { key: 'e', label: 'E', width: 50, class: 'left-middle' },
+                { key: 'r', label: 'R', width: 50, class: 'left-index' },
+                { key: 't', label: 'T', width: 50, class: 'left-index' },
+                { key: 'y', label: 'Y', width: 50, class: 'right-index' },
+                { key: 'u', label: 'U', width: 50, class: 'right-index' },
+                { key: 'i', label: 'I', width: 50, class: 'right-middle' },
+                { key: 'o', label: 'O', width: 50, class: 'right-ring' },
+                { key: 'p', label: 'P', width: 50, class: 'right-pinky' },
+                { key: '[', label: '[ {', width: 50, class: 'right-pinky' },
+                { key: ']', label: '] }', width: 50, class: 'right-pinky' },
+                { key: '\\', label: '\\ |', width: 70, class: 'right-pinky' }
             ],
             // Fourth row - Caps lock row
             [
-                { key: 'caps', label: 'Caps Lock', width: 90, class: 'special-key' },
-                { key: 'a', label: 'A', width: 50 },
-                { key: 's', label: 'S', width: 50 },
-                { key: 'd', label: 'D', width: 50 },
-                { key: 'f', label: 'F', width: 50 },
-                { key: 'g', label: 'G', width: 50 },
-                { key: 'h', label: 'H', width: 50 },
-                { key: 'j', label: 'J', width: 50 },
-                { key: 'k', label: 'K', width: 50 },
-                { key: 'l', label: 'L', width: 50 },
-                { key: ';', label: '; :', width: 50 },
-                { key: "'", label: '" \'', width: 50 },
-                { key: 'enter', label: 'Enter', width: 80, class: 'special-key' }
+                { key: 'caps', label: 'Caps Lock', width: 90, class: 'left-pinky' },
+                { key: 'a', label: 'A', width: 50, class: 'left-pinky' },
+                { key: 's', label: 'S', width: 50, class: 'left-ring' },
+                { key: 'd', label: 'D', width: 50, class: 'left-middle' },
+                { key: 'f', label: 'F', width: 50, class: 'left-index' },
+                { key: 'g', label: 'G', width: 50, class: 'left-index' },
+                { key: 'h', label: 'H', width: 50, class: 'right-index' },
+                { key: 'j', label: 'J', width: 50, class: 'right-index' },
+                { key: 'k', label: 'K', width: 50, class: 'right-middle' },
+                { key: 'l', label: 'L', width: 50, class: 'right-ring' },
+                { key: ';', label: '; :', width: 50, class: 'right-pinky' },
+                { key: "'", label: '" \'', width: 50, class: 'right-pinky' },
+                { key: 'enter', label: 'Enter', width: 80, class: 'right-pinky' }
             ],
             // Fifth row - Shift row
             [
-                { key: 'shift', label: 'Shift', width: 110, class: 'special-key' },
-                { key: 'z', label: 'Z', width: 50 },
-                { key: 'x', label: 'X', width: 50 },
-                { key: 'c', label: 'C', width: 50 },
-                { key: 'v', label: 'V', width: 50 },
-                { key: 'b', label: 'B', width: 50 },
-                { key: 'n', label: 'N', width: 50 },
-                { key: 'm', label: 'M', width: 50 },
-                { key: ',', label: ', <', width: 50 },
-                { key: '.', label: '. >', width: 50 },
-                { key: '/', label: '/ ?', width: 50 },
-                { key: 'shift', label: 'Shift', width: 110, class: 'special-key' }
+                { key: 'shift', label: 'Shift', width: 110, class: 'left-pinky' },
+                { key: 'z', label: 'Z', width: 50, class: 'left-pinky' },
+                { key: 'x', label: 'X', width: 50, class: 'left-ring' },
+                { key: 'c', label: 'C', width: 50, class: 'left-middle' },
+                { key: 'v', label: 'V', width: 50, class: 'left-index' },
+                { key: 'b', label: 'B', width: 50, class: 'left-index' },
+                { key: 'n', label: 'N', width: 50, class: 'right-index' },
+                { key: 'm', label: 'M', width: 50, class: 'right-index' },
+                { key: ',', label: ', <', width: 50, class: 'right-middle' },
+                { key: '.', label: '. >', width: 50, class: 'right-ring' },
+                { key: '/', label: '/ ?', width: 50, class: 'right-pinky' },
+                { key: 'shift', label: 'Shift', width: 110, class: 'right-pinky' }
             ],
-            // Sixth row - Space bar row with proper PC layout and arrow keys
+            // Sixth row - Space bar row
             [
-                { key: 'ctrl', label: 'Ctrl', width: 60, class: 'special-key' },
-                { key: 'fn', label: 'Fn', width: 60, class: 'special-key' },
-                { key: 'win', label: '❖', width: 60, class: 'special-key' },
-                { key: 'alt', label: 'Alt', width: 60, class: 'special-key' },
-                { key: 'space', label: 'Space', width: 300, class: 'special-key' },
-                { key: 'alt', label: 'Alt', width: 60, class: 'special-key' },
-                { key: 'ctrl', label: 'Ctrl', width: 60, class: 'special-key' }
+                { key: 'ctrl', label: 'Ctrl', width: 60, class: 'left-thumb' },
+                { key: 'fn', label: 'Fn', width: 60, class: 'left-thumb' },
+                { key: 'win', label: '❖', width: 60, class: 'left-thumb' },
+                { key: 'alt', label: 'Alt', width: 60, class: 'left-thumb' },
+                { key: 'space', label: 'Space', width: 300, class: 'right-thumb' },
+                { key: 'alt', label: 'Alt', width: 60, class: 'right-thumb' },
+                { key: 'ctrl', label: 'Ctrl', width: 60, class: 'right-thumb' }
             ]
         ];
 
@@ -783,25 +482,21 @@
         const manualInputContainer = document.getElementById('manual-input-container');
         const manualInput = document.getElementById('manual-input');
 
-        // Initialize the keyboard with realistic layout
+        // Initialize the keyboard with hand colors
         function initializeKeyboard() {
             keyboardElement.innerHTML = '';
             
-            // Add main keyboard rows (only the defined 6 rows)
+            // Add main keyboard rows
             keyboardLayout.forEach(row => {
                 const rowElement = document.createElement('div');
                 rowElement.className = 'keyboard-row';
                 
                 row.forEach(keyConfig => {
                     const keyElement = document.createElement('div');
-                    keyElement.className = 'key';
+                    keyElement.className = `key ${keyConfig.class}`;
                     keyElement.textContent = keyConfig.label;
                     keyElement.dataset.key = keyConfig.key;
                     keyElement.style.width = `${keyConfig.width}px`;
-                    
-                    if (keyConfig.class) {
-                        keyElement.classList.add(keyConfig.class);
-                    }
                     
                     rowElement.appendChild(keyElement);
                 });
@@ -857,6 +552,12 @@
             });
         }
 
+        // Get a random word from the word list
+        function getRandomWord() {
+            const randomIndex = Math.floor(Math.random() * wordList.length);
+            return wordList[randomIndex];
+        }
+
         // Switch between practice and manual mode
         function switchMode(isManual) {
             isManualMode = isManual;
@@ -865,7 +566,7 @@
                 practiceBtn.classList.remove('active-mode');
                 manualBtn.classList.add('active-mode');
                 manualInputContainer.style.display = 'block';
-                wordDisplay.style.display = 'none'; // Hide word display in manual mode
+                wordDisplay.style.display = 'none';
                 enableManualInput();
                 resetGame();
                 messageElement.textContent = 'Type any word and press Enter';
@@ -873,7 +574,7 @@
                 manualBtn.classList.remove('active-mode');
                 practiceBtn.classList.add('active-mode');
                 manualInputContainer.style.display = 'none';
-                wordDisplay.style.display = 'flex'; // Show word display in practice mode
+                wordDisplay.style.display = 'flex';
                 resetGame();
                 messageElement.textContent = 'Press Start to begin practice';
             }
@@ -907,17 +608,13 @@
             
             if (isManualMode) {
                 currentWord = manualInput.value.toLowerCase().trim();
-                // Disable manual input during practice
                 disableManualInput();
-                wordDisplay.style.display = 'flex'; // Show word display for practice
+                wordDisplay.style.display = 'flex';
                 wordDisplay.innerHTML = currentWord.split('').map((letter, index) => 
                     index === 0 ? `<span class="current-letter">${letter}</span>` : `<span>${letter}</span>`
                 ).join('');
             } else {
-                if (currentWordIndex >= wordList.length) {
-                    currentWordIndex = 0;
-                }
-                currentWord = wordList[currentWordIndex];
+                currentWord = getRandomWord();
                 updateWordDisplay();
             }
             
@@ -928,8 +625,7 @@
 
         // Load a new word in practice mode
         function loadNextWord() {
-            currentWordIndex = (currentWordIndex + 1) % wordList.length;
-            currentWord = wordList[currentWordIndex];
+            currentWord = getRandomWord();
             currentLetterIndex = 0;
             updateWordDisplay();
             highlightKey(currentWord[0]);
@@ -1076,13 +772,10 @@
             
             const key = event.key.toLowerCase();
             
-            // Don't speak for control keys during manual input
             if (key === 'enter') {
-                // Speak the full word when Enter is pressed
                 const word = manualInput.value;
                 if (word.trim()) {
                     speakFast(word);
-                    // Start practice with this word
                     startGame();
                 }
                 event.preventDefault();
@@ -1100,7 +793,6 @@
                 return;
             }
             
-            // Speak regular characters as they are typed
             if (/^[a-z0-9]$/.test(key)) {
                 speakFast(key);
             } else if (key === ' ') {
@@ -1112,26 +804,22 @@
         function handlePracticeKeyPress(key) {
             if (!gameActive) return;
             
-            // Handle right arrow to load next word in practice mode
             if (key === 'right' && !isManualMode) {
                 loadNextWord();
                 messageElement.textContent = 'New word loaded! Type the highlighted letter!';
                 return;
             }
             
-            // Handle right arrow to enable manual input in manual mode
             if (key === 'right' && isManualMode) {
                 enableManualInput();
-                wordDisplay.style.display = 'none'; // Hide word display
+                wordDisplay.style.display = 'none';
                 resetGame();
                 messageElement.textContent = 'Type any word and press Enter';
                 return;
             }
             
-            // Speak the key name
             speakKey(key);
             
-            // Handle special keys
             if (key === 'backspace') {
                 if (currentLetterIndex > 0) {
                     currentLetterIndex--;
@@ -1142,7 +830,6 @@
             }
             
             if (key === 'enter') {
-                // Speak full word when Enter is pressed
                 speakFast(currentWord);
                 messageElement.textContent = 'Word completed! Press Right Arrow for new word';
                 return;
@@ -1152,7 +839,6 @@
                 key = ' ';
             }
             
-            // Ignore function keys
             if (['tab', 'caps', 'shift', 'ctrl', 'alt', 'fn', 'win', 'menu', 'left', 'up', 'down'].includes(key)) {
                 return;
             }
@@ -1160,18 +846,15 @@
             const expectedKey = currentWord[currentLetterIndex];
             
             if (key === expectedKey) {
-                // Correct key pressed
                 currentLetterIndex++;
                 updateWordDisplay();
                 
-                // Check if word is completed
                 if (currentLetterIndex >= currentWord.length) {
                     messageElement.textContent = 'Word completed! Press Enter to hear it.';
                 } else {
                     highlightKey(currentWord[currentLetterIndex]);
                 }
             } else {
-                // Wrong key pressed
                 speakFast("Try again");
                 messageElement.textContent = 'Wrong key! Try again.';
             }
@@ -1233,19 +916,16 @@
         practiceBtn.addEventListener('click', () => switchMode(false));
         manualBtn.addEventListener('click', () => switchMode(true));
         
-        // Manual input event listeners for voice feedback
         manualInput.addEventListener('keydown', handleManualInput);
 
         // Physical keyboard support for practice mode
         document.addEventListener('keydown', (event) => {
-            // Always handle right arrow key
             if (event.key === 'ArrowRight') {
                 handlePracticeKeyPress('right');
                 event.preventDefault();
                 return;
             }
             
-            // Handle other keys only when game is active
             if (!gameActive) return;
             
             const key = event.key.toLowerCase();
@@ -1262,7 +942,6 @@
                 return;
             }
             
-            // Check if the key is a letter, number, or symbol
             if (/^[a-z0-9]$/.test(key) || key === ' ' || 
                 key === ',' || key === '.' || key === '/' || key === ';' || 
                 key === "'" || key === '[' || key === ']' || key === '\\' ||
