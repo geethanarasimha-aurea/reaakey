@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reaa's Typing Adventure</title>
+    <title>Kids Typing Practice</title>
     <style>
         * {
             margin: 0;
@@ -18,48 +18,42 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             width: 100%;
             background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 15px;
             text-align: center;
         }
         
-        h1 {
-            color: #ff6b6b;
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 0 #ffd166;
+        .manual-input-container {
+            margin: 10px 0;
         }
         
-        .subtitle {
-            color: #06d6a0;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+        .manual-input {
+            padding: 8px;
+            border: 2px solid #06d6a0;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
         }
         
-        .game-info {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            background-color: #ffd166;
-            padding: 10px;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            color: #118ab2;
+        .manual-input:disabled {
+            background-color: #f0f0f0;
+            color: #999;
         }
         
         .word-display {
-            font-size: 2.5rem;
-            margin: 30px 0;
+            font-size: 2rem;
+            margin: 15px 0;
             color: #073b4c;
-            min-height: 80px;
+            min-height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -79,54 +73,49 @@
         }
         
         .keyboard-container {
-            margin-top: 20px;
+            margin-top: 10px;
             background: #e0e0e0;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 8px 0 #bdbdbd;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 0 #bdbdbd;
             overflow-x: auto;
+            border: 2px solid #333;
+            width: 100%;
         }
         
         .keyboard {
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 900px;
+            width: 100%;
+            min-width: 800px;
         }
         
         .keyboard-row {
             display: flex;
             justify-content: center;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
+            width: 100%;
         }
         
         .key {
-            height: 50px;
-            margin: 4px;
+            height: 40px;
+            margin: 2px;
             background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
-            border: 1px solid #bdbdbd;
-            border-radius: 5px;
-            font-size: 0.9rem;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-size: 0.8rem;
             font-weight: bold;
             color: #333;
-            box-shadow: 0 3px 0 #bdbdbd;
+            box-shadow: 0 2px 0 #bdbdbd;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            transition: all 0.1s;
             user-select: none;
             text-align: center;
-            padding: 0 5px;
-        }
-        
-        .key:hover {
-            background: linear-gradient(145deg, #eeeeee, #d6d6d6);
-        }
-        
-        .key:active, .key.active {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 #bdbdbd;
+            padding: 0 4px;
+            pointer-events: none;
+            flex-shrink: 0;
         }
         
         .key.highlight {
@@ -137,21 +126,13 @@
         
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
         
         .special-key {
             background: linear-gradient(145deg, #bdbdbd, #9e9e9e);
             color: #333;
-            box-shadow: 0 3px 0 #757575;
-        }
-        
-        .function-key {
-            background: linear-gradient(145deg, #e0e0e0, #bdbdbd);
-            color: #333;
-            box-shadow: 0 3px 0 #9e9e9e;
-            font-size: 0.8rem;
         }
         
         .space-key {
@@ -159,7 +140,7 @@
         }
         
         .enter-key {
-            width: 90px;
+            width: 80px;
         }
         
         .tab-key {
@@ -174,7 +155,7 @@
             width: 110px;
         }
         
-        .ctrl-key, .alt-key {
+        .ctrl-key, .alt-key, .fn-key, .win-key {
             width: 60px;
         }
         
@@ -182,34 +163,47 @@
             width: 90px;
         }
         
-        .f-key {
-            width: 50px;
+        .arrow-container {
+            display: flex;
+            flex-direction: column;
+            height: 40px;
+            margin: 2px;
+            gap: 2px;
         }
         
-        .del-key {
-            width: 60px;
+        .arrow-row {
+            display: flex;
+            gap: 2px;
+            height: 19px;
         }
         
         .arrow-key {
-            width: 50px;
-            height: 50px;
+            width: 30px;
+            height: 19px;
             background: linear-gradient(145deg, #bdbdbd, #9e9e9e);
             color: #333;
-        }
-        
-        .controls {
-            margin-top: 20px;
             display: flex;
             justify-content: center;
-            gap: 15px;
+            align-items: center;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            box-shadow: 0 2px 0 #bdbdbd;
+        }
+        
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
         
-        button {
-            padding: 12px 25px;
-            font-size: 1.2rem;
+        .control-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
             border: none;
-            border-radius: 50px;
+            border-radius: 15px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
@@ -218,131 +212,89 @@
         .start-btn {
             background: linear-gradient(to right, #06d6a0, #4cc9f0);
             color: white;
-            box-shadow: 0 4px 0 #049c75;
-        }
-        
-        .start-btn:hover {
-            background: linear-gradient(to right, #04b386, #3ab0d9);
         }
         
         .reset-btn {
             background: linear-gradient(to right, #ffd166, #ff9e6d);
             color: #073b4c;
-            box-shadow: 0 4px 0 #e09c3a;
-        }
-        
-        .reset-btn:hover {
-            background: linear-gradient(to right, #ffc145, #ff8a50);
         }
         
         .speak-btn {
             background: linear-gradient(to right, #ef476f, #ff9e6d);
             color: white;
-            box-shadow: 0 4px 0 #c23354;
         }
         
-        .speak-btn:hover {
-            background: linear-gradient(to right, #d63d5f, #e88c5a);
-        }
-        
-        .nav-btn {
+        .mode-btn {
             background: linear-gradient(to right, #9b59b6, #8e44ad);
             color: white;
-            box-shadow: 0 4px 0 #6c3483;
         }
         
-        .nav-btn:hover {
-            background: linear-gradient(to right, #8e44ad, #7d3c98);
+        .active-mode {
+            transform: scale(1.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .message {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            min-height: 40px;
+            margin-top: 10px;
+            font-size: 1rem;
+            min-height: 25px;
             color: #118ab2;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(to right, #06d6a0, #4cc9f0);
-            width: 0%;
-            transition: width 0.5s;
-        }
-        
-        .instructions {
-            background-color: #ffd166;
-            padding: 15px;
-            border-radius: 15px;
-            margin-top: 20px;
-            color: #073b4c;
-            font-size: 1.1rem;
         }
         
         .completed-word {
             color: #06d6a0;
         }
         
-        .reaa-name {
-            color: #ef476f;
-            font-weight: bold;
-            font-size: 1.8rem;
-        }
-        
-        @media (max-width: 1000px) {
-            .keyboard-container {
-                overflow-x: auto;
+        @media (max-width: 900px) {
+            .keyboard {
+                min-width: 700px;
             }
             
             .key {
-                height: 40px;
-                font-size: 0.8rem;
-                margin: 2px;
-            }
-            
-            .f-key, .arrow-key {
-                width: 40px;
-                height: 40px;
+                height: 35px;
+                font-size: 0.7rem;
             }
             
             .space-key {
-                width: 200px;
-            }
-            
-            h1 {
-                font-size: 2.2rem;
+                width: 250px;
             }
             
             .word-display {
-                font-size: 2rem;
+                font-size: 1.5rem;
+            }
+            
+            .controls-row {
+                gap: 5px;
+            }
+            
+            .control-btn {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+            }
+            
+            .arrow-key {
+                width: 25px;
+                height: 16px;
+                font-size: 0.5rem;
+            }
+            
+            .arrow-container {
+                height: 35px;
+            }
+            
+            .arrow-row {
+                height: 16px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Reaa's Typing Adventure</h1>
-        <p class="subtitle">Learn typing with a realistic keyboard!</p>
-        
-        <div class="game-info">
-            <div class="score">Score: <span id="score">0</span></div>
-            <div class="words-completed">Words: <span id="words-completed">0</span>/100</div>
-            <div class="current-word">Word: <span id="current-word-number">1</span>/100</div>
+        <div class="manual-input-container" id="manual-input-container" style="display: none;">
+            <input type="text" class="manual-input" id="manual-input" placeholder="Type any word and press Enter">
         </div>
         
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
-        </div>
-        
-        <div class="word-display" id="word-display"></div>
+        <div class="word-display" id="word-display">Press Start to begin!</div>
         
         <div class="keyboard-container">
             <div class="keyboard" id="keyboard">
@@ -350,44 +302,29 @@
             </div>
         </div>
         
-        <div class="controls">
-            <button class="start-btn" id="start-btn">Start Game</button>
-            <button class="reset-btn" id="reset-btn">Reset</button>
-            <button class="speak-btn" id="speak-btn">🔊 Speak Word</button>
-            <button class="nav-btn" id="prev-btn">◀ Previous</button>
-            <button class="nav-btn" id="next-btn">Next ▶</button>
+        <div class="controls-row">
+            <button class="control-btn start-btn" id="start-btn">Start</button>
+            <button class="control-btn reset-btn" id="reset-btn">Reset</button>
+            <button class="control-btn speak-btn" id="speak-btn">Speak</button>
+            <button class="control-btn mode-btn active-mode" id="practice-btn">Practice</button>
+            <button class="control-btn mode-btn" id="manual-btn">Manual</button>
         </div>
         
-        <div class="message" id="message"></div>
-        
-        <div class="instructions">
-            <p>Type the highlighted letter on the keyboard. Each key press will speak the key name. Complete the word and press Next to continue.</p>
-        </div>
+        <div class="message" id="message">Select mode and press Start</div>
     </div>
 
     <script>
-        // Word list for practice
+        // Word list for practice mode
         const wordList = [
             "apple", "ball", "cat", "dog", "elephant", "fish", "goat", "hat", "ice", "jump",
-            "kite", "lion", "monkey", "nest", "orange", "pig", "queen", "rabbit", "sun", "tree",
-            "umbrella", "van", "water", "xray", "yoyo", "zebra", "ant", "bear", "car", "duck",
-            "egg", "frog", "girl", "house", "igloo", "jacket", "king", "leaf", "moon", "nose",
-            "owl", "pencil", "queen", "rain", "star", "train", "up", "violin", "whale", "box",
-            "yellow", "zoo", "baby", "cake", "door", "eye", "fire", "grape", "heart", "icecream",
-            "juice", "key", "lamp", "mouse", "night", "orange", "pizza", "quilt", "ring", "shoe",
-            "table", "unicorn", "vase", "window", "xylophone", "yacht", "zipper", "airplane", "boat", "cloud",
-            "dinosaur", "earth", "flower", "guitar", "horse", "island", "jelly", "kangaroo", "lizard", "mountain",
-            "notebook", "ocean", "penguin", "quail", "rocket", "snake", "tiger", "uniform", "volcano", "worm"
+            "kite", "lion", "monkey", "nest", "orange", "pig", "queen", "rabbit", "sun", "tree"
         ];
 
-        // Create a shuffled copy of word list for random order
-        let shuffledWordList = [...wordList];
-
-        // Keyboard layout based on the provided image
+        // Updated Keyboard layout with realistic PC layout (removed duplicate bottom row)
         const keyboardLayout = [
-            // Function keys row
+            // First row - Function keys
             [
-                { key: 'esc', label: 'Esc', width: 60, class: 'function-key' },
+                { key: 'esc', label: 'Esc', width: 60, class: 'special-key' },
                 { key: 'f1', label: 'F1', width: 50, class: 'function-key' },
                 { key: 'f2', label: 'F2', width: 50, class: 'function-key' },
                 { key: 'f3', label: 'F3', width: 50, class: 'function-key' },
@@ -402,24 +339,24 @@
                 { key: 'f12', label: 'F12', width: 50, class: 'function-key' },
                 { key: 'del', label: 'Del', width: 60, class: 'special-key' }
             ],
-            // Number row
+            // Second row - Number row with ~
             [
-                { key: '`', label: '`', width: 50 },
-                { key: '1', label: '1', width: 50 },
-                { key: '2', label: '2', width: 50 },
-                { key: '3', label: '3', width: 50 },
-                { key: '4', label: '4', width: 50 },
-                { key: '5', label: '5', width: 50 },
-                { key: '6', label: '6', width: 50 },
-                { key: '7', label: '7', width: 50 },
-                { key: '8', label: '8', width: 50 },
-                { key: '9', label: '9', width: 50 },
-                { key: '0', label: '0', width: 50 },
-                { key: '-', label: '-', width: 50 },
-                { key: '=', label: '=', width: 50 },
+                { key: '`', label: '` ~', width: 50 },
+                { key: '1', label: '1 !', width: 50 },
+                { key: '2', label: '2 @', width: 50 },
+                { key: '3', label: '3 #', width: 50 },
+                { key: '4', label: '4 $', width: 50 },
+                { key: '5', label: '5 %', width: 50 },
+                { key: '6', label: '6 ^', width: 50 },
+                { key: '7', label: '7 &', width: 50 },
+                { key: '8', label: '8 *', width: 50 },
+                { key: '9', label: '9 (', width: 50 },
+                { key: '0', label: '0 )', width: 50 },
+                { key: '-', label: '- _', width: 50 },
+                { key: '=', label: '= +', width: 50 },
                 { key: 'backspace', label: 'Backspace', width: 90, class: 'special-key' }
             ],
-            // First letter row
+            // Third row - Tab row
             [
                 { key: 'tab', label: 'Tab', width: 70, class: 'special-key' },
                 { key: 'q', label: 'Q', width: 50 },
@@ -432,11 +369,11 @@
                 { key: 'i', label: 'I', width: 50 },
                 { key: 'o', label: 'O', width: 50 },
                 { key: 'p', label: 'P', width: 50 },
-                { key: '[', label: '[', width: 50 },
-                { key: ']', label: ']', width: 50 },
-                { key: '\\', label: '\\', width: 70, class: 'special-key' }
+                { key: '[', label: '[ {', width: 50 },
+                { key: ']', label: '] }', width: 50 },
+                { key: '\\', label: '\\ |', width: 70, class: 'special-key' }
             ],
-            // Second letter row
+            // Fourth row - Caps lock row
             [
                 { key: 'caps', label: 'Caps Lock', width: 90, class: 'special-key' },
                 { key: 'a', label: 'A', width: 50 },
@@ -448,11 +385,11 @@
                 { key: 'j', label: 'J', width: 50 },
                 { key: 'k', label: 'K', width: 50 },
                 { key: 'l', label: 'L', width: 50 },
-                { key: ';', label: ';', width: 50 },
-                { key: "'", label: "'", width: 50 },
-                { key: 'enter', label: 'Enter', width: 90, class: 'special-key' }
+                { key: ';', label: '; :', width: 50 },
+                { key: "'", label: '" \'', width: 50 },
+                { key: 'enter', label: 'Enter', width: 80, class: 'special-key' }
             ],
-            // Third letter row
+            // Fifth row - Shift row
             [
                 { key: 'shift', label: 'Shift', width: 110, class: 'special-key' },
                 { key: 'z', label: 'Z', width: 50 },
@@ -462,62 +399,49 @@
                 { key: 'b', label: 'B', width: 50 },
                 { key: 'n', label: 'N', width: 50 },
                 { key: 'm', label: 'M', width: 50 },
-                { key: ',', label: ',', width: 50 },
-                { key: '.', label: '.', width: 50 },
-                { key: '/', label: '/', width: 50 },
+                { key: ',', label: ', <', width: 50 },
+                { key: '.', label: '. >', width: 50 },
+                { key: '/', label: '/ ?', width: 50 },
                 { key: 'shift', label: 'Shift', width: 110, class: 'special-key' }
             ],
-            // Space bar row
+            // Sixth row - Space bar row with proper PC layout and arrow keys
             [
                 { key: 'ctrl', label: 'Ctrl', width: 60, class: 'special-key' },
                 { key: 'fn', label: 'Fn', width: 60, class: 'special-key' },
+                { key: 'win', label: '❖', width: 60, class: 'special-key' },
                 { key: 'alt', label: 'Alt', width: 60, class: 'special-key' },
-                { key: 'space', label: '', width: 300, class: 'special-key' },
+                { key: 'space', label: 'Space', width: 300, class: 'special-key' },
                 { key: 'alt', label: 'Alt', width: 60, class: 'special-key' },
-                { key: 'ctrl', label: 'Ctrl', width: 60, class: 'special-key' },
-                { key: 'left', label: '◀', width: 50, class: 'arrow-key', noSpeak: true },
-                { key: 'up', label: '▲', width: 50, class: 'arrow-key', noSpeak: true },
-                { key: 'down', label: '▼', width: 50, class: 'arrow-key', noSpeak: true },
-                { key: 'right', label: '▶', width: 50, class: 'arrow-key', noSpeak: true }
+                { key: 'ctrl', label: 'Ctrl', width: 60, class: 'special-key' }
             ]
         ];
 
         // Game state
         let currentWordIndex = 0;
         let currentLetterIndex = 0;
-        let score = 0;
-        let wordsCompleted = 0;
         let gameActive = false;
         let currentWord = '';
         let isSpeaking = false;
+        let isManualMode = false;
+        let isManualInputEnabled = true;
 
         // DOM elements
         const wordDisplay = document.getElementById('word-display');
         const keyboardElement = document.getElementById('keyboard');
-        const scoreElement = document.getElementById('score');
-        const wordsCompletedElement = document.getElementById('words-completed');
-        const currentWordNumberElement = document.getElementById('current-word-number');
         const startButton = document.getElementById('start-btn');
         const resetButton = document.getElementById('reset-btn');
         const speakButton = document.getElementById('speak-btn');
-        const prevButton = document.getElementById('prev-btn');
-        const nextButton = document.getElementById('next-btn');
         const messageElement = document.getElementById('message');
-        const progressElement = document.getElementById('progress');
+        const practiceBtn = document.getElementById('practice-btn');
+        const manualBtn = document.getElementById('manual-btn');
+        const manualInputContainer = document.getElementById('manual-input-container');
+        const manualInput = document.getElementById('manual-input');
 
-        // Shuffle array function
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        // Initialize the keyboard
+        // Initialize the keyboard with realistic layout
         function initializeKeyboard() {
             keyboardElement.innerHTML = '';
             
+            // Add main keyboard rows (only the defined 6 rows)
             keyboardLayout.forEach(row => {
                 const rowElement = document.createElement('div');
                 rowElement.className = 'keyboard-row';
@@ -533,70 +457,153 @@
                         keyElement.classList.add(keyConfig.class);
                     }
                     
-                    // Add click event for on-screen keyboard
-                    keyElement.addEventListener('click', () => handleKeyPress(keyConfig.key, keyConfig.noSpeak));
-                    
                     rowElement.appendChild(keyElement);
                 });
+                
+                // For the last row (space bar row), add arrow keys
+                if (row === keyboardLayout[5]) {
+                    // Add compact arrow keys container
+                    const arrowContainer = document.createElement('div');
+                    arrowContainer.className = 'arrow-container';
+                    
+                    // Top row - only up arrow
+                    const topRow = document.createElement('div');
+                    topRow.className = 'arrow-row';
+                    topRow.style.justifyContent = 'center';
+                    
+                    const upArrow = document.createElement('div');
+                    upArrow.className = 'arrow-key';
+                    upArrow.textContent = '▲';
+                    upArrow.dataset.key = 'up';
+                    topRow.appendChild(upArrow);
+                    
+                    // Bottom row - left, down, right arrows
+                    const bottomArrowRow = document.createElement('div');
+                    bottomArrowRow.className = 'arrow-row';
+                    
+                    const leftArrow = document.createElement('div');
+                    leftArrow.className = 'arrow-key';
+                    leftArrow.textContent = '◀';
+                    leftArrow.dataset.key = 'left';
+                    
+                    const downArrow = document.createElement('div');
+                    downArrow.className = 'arrow-key';
+                    downArrow.textContent = '▼';
+                    downArrow.dataset.key = 'down';
+                    
+                    const rightArrow = document.createElement('div');
+                    rightArrow.className = 'arrow-key';
+                    rightArrow.textContent = '▶';
+                    rightArrow.dataset.key = 'right';
+                    
+                    bottomArrowRow.appendChild(leftArrow);
+                    bottomArrowRow.appendChild(downArrow);
+                    bottomArrowRow.appendChild(rightArrow);
+                    
+                    arrowContainer.appendChild(topRow);
+                    arrowContainer.appendChild(bottomArrowRow);
+                    
+                    // Add arrow container to the last row
+                    rowElement.appendChild(arrowContainer);
+                }
                 
                 keyboardElement.appendChild(rowElement);
             });
         }
 
-        // Start the game
-        function startGame() {
-            gameActive = true;
-            currentWordIndex = 0;
-            currentLetterIndex = 0;
-            score = 0;
-            wordsCompleted = 0;
+        // Switch between practice and manual mode
+        function switchMode(isManual) {
+            isManualMode = isManual;
             
-            // Shuffle words for random order
-            shuffledWordList = shuffleArray([...wordList]);
-            
-            updateScore();
-            loadWord();
-            messageElement.innerHTML = 'Type the highlighted letter!';
-            startButton.textContent = 'Pause Game';
-            progressElement.style.width = '0%';
+            if (isManual) {
+                practiceBtn.classList.remove('active-mode');
+                manualBtn.classList.add('active-mode');
+                manualInputContainer.style.display = 'block';
+                wordDisplay.style.display = 'none'; // Hide word display in manual mode
+                enableManualInput();
+                resetGame();
+                messageElement.textContent = 'Type any word and press Enter';
+            } else {
+                manualBtn.classList.remove('active-mode');
+                practiceBtn.classList.add('active-mode');
+                manualInputContainer.style.display = 'none';
+                wordDisplay.style.display = 'flex'; // Show word display in practice mode
+                resetGame();
+                messageElement.textContent = 'Press Start to begin practice';
+            }
         }
 
-        // Load a new word
-        function loadWord() {
-            if (currentWordIndex >= shuffledWordList.length) {
-                endGame();
+        // Enable manual input
+        function enableManualInput() {
+            isManualInputEnabled = true;
+            manualInput.disabled = false;
+            manualInput.placeholder = "Type any word and press Enter";
+            manualInput.value = '';
+            manualInput.focus();
+        }
+
+        // Disable manual input
+        function disableManualInput() {
+            isManualInputEnabled = false;
+            manualInput.disabled = true;
+            manualInput.placeholder = "Press Right Arrow to type new word";
+        }
+
+        // Start the game
+        function startGame() {
+            if (isManualMode && !manualInput.value.trim()) {
+                messageElement.textContent = 'Please type a word first!';
                 return;
             }
             
-            currentWord = shuffledWordList[currentWordIndex];
+            gameActive = true;
             currentLetterIndex = 0;
-            currentWordNumberElement.textContent = currentWordIndex + 1;
             
-            // Display the word with the first letter highlighted
+            if (isManualMode) {
+                currentWord = manualInput.value.toLowerCase().trim();
+                // Disable manual input during practice
+                disableManualInput();
+                wordDisplay.style.display = 'flex'; // Show word display for practice
+                wordDisplay.innerHTML = currentWord.split('').map((letter, index) => 
+                    index === 0 ? `<span class="current-letter">${letter}</span>` : `<span>${letter}</span>`
+                ).join('');
+            } else {
+                if (currentWordIndex >= wordList.length) {
+                    currentWordIndex = 0;
+                }
+                currentWord = wordList[currentWordIndex];
+                updateWordDisplay();
+            }
+            
+            highlightKey(currentWord[0]);
+            messageElement.textContent = 'Type the highlighted letter!';
+            startButton.textContent = 'Playing...';
+        }
+
+        // Load a new word in practice mode
+        function loadNextWord() {
+            currentWordIndex = (currentWordIndex + 1) % wordList.length;
+            currentWord = wordList[currentWordIndex];
+            currentLetterIndex = 0;
             updateWordDisplay();
-            
-            // Highlight the corresponding key on the keyboard
             highlightKey(currentWord[0]);
         }
 
         // Highlight a key on the keyboard
         function highlightKey(letter) {
-            // Remove highlight from all keys
             document.querySelectorAll('.key').forEach(key => {
                 key.classList.remove('highlight');
             });
             
-            // Add highlight to the target key
             const targetKey = document.querySelector(`.key[data-key="${letter.toLowerCase()}"]`);
             if (targetKey) {
                 targetKey.classList.add('highlight');
             }
         }
 
-        // Speech function with callback support
+        // Speech function
         function speakWithCallback(text, callback) {
             if (isSpeaking) {
-                // If already speaking, wait a bit and try again
                 setTimeout(() => speakWithCallback(text, callback), 100);
                 return;
             }
@@ -606,7 +613,6 @@
             utterance.rate = 0.9;
             utterance.pitch = 1.2;
             
-            // Try to use a child-friendly voice if available
             const voices = speechSynthesis.getVoices();
             const childVoice = voices.find(voice => 
                 voice.name.includes('Child') || 
@@ -631,9 +637,8 @@
             speechSynthesis.speak(utterance);
         }
 
-        // Fast speech function - doesn't wait for previous speech to finish
+        // Fast speech function
         function speakFast(text) {
-            // Cancel any ongoing speech
             speechSynthesis.cancel();
             isSpeaking = false;
             
@@ -641,7 +646,6 @@
             utterance.rate = 0.9;
             utterance.pitch = 1.2;
             
-            // Try to use a child-friendly voice if available
             const voices = speechSynthesis.getVoices();
             const childVoice = voices.find(voice => 
                 voice.name.includes('Child') || 
@@ -668,7 +672,6 @@
         function speakKey(key) {
             let keyName = key;
             
-            // Convert special keys to readable names
             const keyNames = {
                 'esc': 'Escape',
                 'f1': 'F1',
@@ -689,10 +692,11 @@
                 'caps': 'Caps Lock',
                 'shift': 'Shift',
                 'ctrl': 'Control',
+                'fn': 'Function',
+                'win': 'Windows',
                 'alt': 'Alt',
                 'space': 'Space',
                 'enter': 'Enter',
-                'fn': 'Function',
                 'left': 'Left Arrow',
                 'right': 'Right Arrow',
                 'up': 'Up Arrow',
@@ -717,15 +721,62 @@
             speakFast(keyName);
         }
 
-        // Handle key press
-        function handleKeyPress(key, noSpeak = false) {
+        // Handle manual input typing with voice feedback
+        function handleManualInput(event) {
+            if (!isManualInputEnabled) {
+                event.preventDefault();
+                return;
+            }
+            
+            const key = event.key.toLowerCase();
+            
+            // Don't speak for control keys during manual input
+            if (key === 'enter') {
+                // Speak the full word when Enter is pressed
+                const word = manualInput.value;
+                if (word.trim()) {
+                    speakFast(word);
+                    // Start practice with this word
+                    startGame();
+                }
+                event.preventDefault();
+                return;
+            }
+            
+            if (key === 'backspace' || key === 'delete') {
+                speakKey('backspace');
+                return;
+            }
+            
+            if (key === 'tab') {
+                speakKey('tab');
+                event.preventDefault();
+                return;
+            }
+            
+            // Speak regular characters as they are typed
+            if (/^[a-z0-9]$/.test(key)) {
+                speakFast(key);
+            } else if (key === ' ') {
+                speakKey('space');
+            }
+        }
+
+        // Handle key press from physical keyboard during practice
+        function handlePracticeKeyPress(key) {
             if (!gameActive) return;
             
-            // Don't speak for arrow keys
-            if (!noSpeak) {
-                // Speak the key name immediately
-                speakKey(key);
+            // Handle right arrow to enable manual input
+            if (key === 'right' && isManualMode) {
+                enableManualInput();
+                wordDisplay.style.display = 'none'; // Hide word display
+                resetGame();
+                messageElement.textContent = 'Type any word and press Enter';
+                return;
             }
+            
+            // Speak the key name
+            speakKey(key);
             
             // Handle special keys
             if (key === 'backspace') {
@@ -738,30 +789,18 @@
             }
             
             if (key === 'enter') {
-                // Skip to next word if Enter is pressed
-                completeWord();
+                // Speak full word when Enter is pressed
+                speakFast(currentWord);
+                messageElement.textContent = 'Word completed! Press Right Arrow for new word';
                 return;
             }
             
             if (key === 'space') {
-                // Space acts like any other key for single words
                 key = ' ';
             }
             
-            // Handle arrow keys for navigation
-            if (key === 'left') {
-                navigateToPreviousWord();
-                return;
-            }
-            
-            if (key === 'right') {
-                navigateToNextWord();
-                return;
-            }
-            
-            // Ignore function keys and other non-character keys
-            if (['esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12',
-                 'tab', 'caps', 'shift', 'ctrl', 'alt', 'fn', 'del', 'up', 'down'].includes(key)) {
+            // Ignore function keys
+            if (['tab', 'caps', 'shift', 'ctrl', 'alt', 'fn', 'win', 'menu', 'left', 'up', 'down'].includes(key)) {
                 return;
             }
             
@@ -769,50 +808,23 @@
             
             if (key === expectedKey) {
                 // Correct key pressed
-                score += 10;
                 currentLetterIndex++;
-                
-                // Update word display
                 updateWordDisplay();
                 
                 // Check if word is completed
                 if (currentLetterIndex >= currentWord.length) {
-                    // Word completed - Wait for last letter to finish speaking, then speak full word
-                    setTimeout(() => {
-                        speakWithCallback(currentWord, () => {
-                            // Check if we've completed 5 words for motivational message
-                            if ((currentWordIndex + 1) % 5 === 0) {
-                                setTimeout(() => {
-                                    speakFast("Good Reaa, next spell with me");
-                                    messageElement.innerHTML = 'Word completed! <span class="reaa-name">Good Reaa!</span> Press Next to continue.';
-                                }, 500);
-                            } else {
-                                messageElement.innerHTML = 'Word completed! Press Next to continue.';
-                            }
-                        });
-                    }, 300);
+                    messageElement.textContent = 'Word completed! Press Enter to hear it.';
                 } else {
-                    // Highlight next key
                     highlightKey(currentWord[currentLetterIndex]);
                 }
             } else {
                 // Wrong key pressed
-                messageElement.textContent = 'Oops! Try again.';
-                score = Math.max(0, score - 5);
-                updateScore();
-                
-                // Visual feedback for wrong key
-                const pressedKey = document.querySelector(`.key[data-key="${key}"]`);
-                if (pressedKey) {
-                    pressedKey.classList.add('active');
-                    setTimeout(() => {
-                        pressedKey.classList.remove('active');
-                    }, 200);
-                }
+                speakFast("Try again");
+                messageElement.textContent = 'Wrong key! Try again.';
             }
         }
 
-        // Update word display based on current progress
+        // Update word display
         function updateWordDisplay() {
             let displayHTML = '';
             for (let i = 0; i < currentWord.length; i++) {
@@ -824,157 +836,95 @@
                     displayHTML += `<span>${currentWord[i]}</span>`;
                 }
             }
-            
             wordDisplay.innerHTML = displayHTML;
         }
 
-        // Update score display
-        function updateScore() {
-            scoreElement.textContent = score;
-            wordsCompletedElement.textContent = wordsCompleted;
-            progressElement.style.width = `${(wordsCompleted / shuffledWordList.length) * 100}%`;
-        }
-
-        // Speak the current word using text-to-speech
+        // Speak the current word
         function speakWord() {
             if (!currentWord) return;
             speakFast(currentWord);
         }
 
-        // Navigate to previous word
-        function navigateToPreviousWord() {
-            if (currentWordIndex > 0) {
-                currentWordIndex--;
-                loadWord();
-                messageElement.textContent = 'Previous word loaded.';
-            } else {
-                messageElement.textContent = 'This is the first word.';
-            }
-        }
-
-        // Navigate to next word
-        function navigateToNextWord() {
-            if (currentWordIndex < shuffledWordList.length - 1) {
-                currentWordIndex++;
-                loadWord();
-                messageElement.innerHTML = 'Next word loaded. Type the highlighted letter!';
-            } else {
-                messageElement.textContent = 'This is the last word.';
-            }
-        }
-
-        // Complete the current word
-        function completeWord() {
-            if (currentLetterIndex >= currentWord.length) {
-                wordsCompleted++;
-                updateScore();
-                messageElement.innerHTML = 'Word completed! Press Next to continue.';
-            }
-        }
-
-        // End the game
-        function endGame() {
-            gameActive = false;
-            messageElement.innerHTML = `Congratulations! You completed all ${shuffledWordList.length} words! Final score: ${score}`;
-            wordDisplay.innerHTML = 'Game Complete!';
-            startButton.textContent = 'Play Again';
-            
-            // Remove highlights from keyboard
-            document.querySelectorAll('.key').forEach(key => {
-                key.classList.remove('highlight');
-            });
-        }
-
         // Reset the game
         function resetGame() {
             gameActive = false;
-            currentWordIndex = 0;
             currentLetterIndex = 0;
-            score = 0;
-            wordsCompleted = 0;
+            currentWordIndex = 0;
             
-            // Reset to original order
-            shuffledWordList = [...wordList];
+            if (isManualMode) {
+                if (isManualInputEnabled) {
+                    wordDisplay.style.display = 'none';
+                    messageElement.textContent = 'Type any word and press Enter';
+                } else {
+                    wordDisplay.style.display = 'flex';
+                    wordDisplay.innerHTML = 'Press Start to begin!';
+                    messageElement.textContent = 'Press Right Arrow to type new word';
+                }
+            } else {
+                wordDisplay.innerHTML = 'Press Start to begin!';
+                messageElement.textContent = 'Press Start to begin practice';
+            }
             
-            updateScore();
-            wordDisplay.innerHTML = 'Press Start to begin!';
-            messageElement.innerHTML = '';
-            startButton.textContent = 'Start Game';
-            progressElement.style.width = '0%';
-            currentWordNumberElement.textContent = '1';
+            startButton.textContent = 'Start';
             
-            // Remove highlights from keyboard
             document.querySelectorAll('.key').forEach(key => {
                 key.classList.remove('highlight');
             });
         }
 
         // Event listeners
-        startButton.addEventListener('click', () => {
-            if (!gameActive) {
-                startGame();
-            } else {
-                gameActive = false;
-                startButton.textContent = 'Resume Game';
-                messageElement.textContent = 'Game paused. Click Resume to continue.';
-            }
-        });
-
+        startButton.addEventListener('click', startGame);
         resetButton.addEventListener('click', resetGame);
-        
         speakButton.addEventListener('click', speakWord);
         
-        prevButton.addEventListener('click', navigateToPreviousWord);
+        practiceBtn.addEventListener('click', () => switchMode(false));
+        manualBtn.addEventListener('click', () => switchMode(true));
         
-        nextButton.addEventListener('click', navigateToNextWord);
+        // Manual input event listeners for voice feedback
+        manualInput.addEventListener('keydown', handleManualInput);
 
-        // Physical keyboard support
+        // Physical keyboard support for practice mode
         document.addEventListener('keydown', (event) => {
-            if (!gameActive) return;
+            if (!gameActive && !isManualInputEnabled) return;
             
             const key = event.key.toLowerCase();
             
-            // Handle special keys
             if (key === 'backspace') {
-                handleKeyPress('backspace');
+                if (isManualInputEnabled) {
+                    // Allow backspace in manual input
+                    return;
+                }
+                handlePracticeKeyPress('backspace');
                 event.preventDefault();
                 return;
             }
             
             if (key === 'enter') {
-                handleKeyPress('enter');
-                event.preventDefault();
-                return;
-            }
-            
-            // Handle arrow keys (don't speak for these)
-            if (key === 'arrowleft') {
-                handleKeyPress('left', true);
+                if (isManualInputEnabled) {
+                    // Allow enter in manual input
+                    return;
+                }
+                handlePracticeKeyPress('enter');
                 event.preventDefault();
                 return;
             }
             
             if (key === 'arrowright') {
-                handleKeyPress('right', true);
+                handlePracticeKeyPress('right');
                 event.preventDefault();
                 return;
             }
             
-            // Check if the key is a letter, number, or space
+            // Check if the key is a letter, number, or symbol
             if (/^[a-z0-9]$/.test(key) || key === ' ' || 
                 key === ',' || key === '.' || key === '/' || key === ';' || 
                 key === "'" || key === '[' || key === ']' || key === '\\' ||
                 key === '`' || key === '-' || key === '=') {
-                handleKeyPress(key);
-                
-                // Visual feedback for physical keyboard
-                const keyElement = document.querySelector(`.key[data-key="${key}"]`);
-                if (keyElement) {
-                    keyElement.classList.add('active');
-                    setTimeout(() => {
-                        keyElement.classList.remove('active');
-                    }, 200);
+                if (isManualInputEnabled) {
+                    // Allow typing in manual input
+                    return;
                 }
+                handlePracticeKeyPress(key);
             }
         });
 
